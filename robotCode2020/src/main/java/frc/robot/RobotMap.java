@@ -20,7 +20,7 @@ public class RobotMap {
   public static int NEOrf = 12;
   public static int NEOrb = 13;
 
-
+  public static int NEO1 = 4; // seperate testing
 
 
   //old 
