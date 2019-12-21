@@ -51,7 +51,7 @@ public class S_Neo extends Subsystem {
     rbmoto.restoreFactoryDefaults();
     rbmoto.setInverted(true);
     
-
+/* no motor for now
     //pid testing
     motor1 = new CANSparkMax(RobotMap.NEO1, MotorType.kBrushless);
     motor1.restoreFactoryDefaults();
@@ -63,13 +63,6 @@ public class S_Neo extends Subsystem {
     pidcontroller1 = motor1.getPIDController();
     pidcontroller1.setFeedbackDevice(encoder1);
 
-    /*
-    pidcontroller1.setP(kP);
-    pidcontroller1.setI(kI);
-    pidcontroller1.setD(kD);
-    pidcontroller1.setFF(kFF);
-    pidcontroller1.setOutputRange(kMinOutput, kMaxOutput);
-    */
 
     SmartDashboard.putNumber("P", kP);
     SmartDashboard.putNumber("I", kI);
@@ -80,10 +73,10 @@ public class S_Neo extends Subsystem {
     SmartDashboard.putNumber("Setpoint", 0);
 
     setPID();
-
+*/
   }
   
-
+/* TODO: put back
   public void setPID(){
     double p = SmartDashboard.getNumber("P", 0);
     double i = SmartDashboard.getNumber("I", 0);
@@ -138,7 +131,7 @@ public class S_Neo extends Subsystem {
     return encoder1.getPosition(); //- tareEncPosition; TODO: make setpoints relative based
   }
 
-
+*/
 
   public void runMotor(double left, double right){
    
