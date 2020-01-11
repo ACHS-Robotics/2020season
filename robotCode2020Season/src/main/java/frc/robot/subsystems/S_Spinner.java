@@ -24,7 +24,7 @@ public class S_Spinner extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   private final ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
-  private Color detectedColor;
+  //private Color detectedColor;
   private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
   private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
   private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);

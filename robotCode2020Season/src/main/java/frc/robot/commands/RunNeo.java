@@ -25,8 +25,8 @@ public class RunNeo extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    //Robot.sneo.setPID();
-    Robot.sneo.runMotor(-Robot.oi.driveController.getRawAxis(RobotMap.leftAxisY), -Robot.oi.driveController.getRawAxis(RobotMap.rightAxisY));
+    Robot.sneo.setPID();
+    //Robot.sneo.runMotor(-Robot.oi.driveController.getRawAxis(RobotMap.leftAxisY), -Robot.oi.driveController.getRawAxis(RobotMap.rightAxisY));
     //Robot.sneo.getSDInfo();
   }
 

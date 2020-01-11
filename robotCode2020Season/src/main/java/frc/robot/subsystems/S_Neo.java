@@ -12,6 +12,7 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.EncoderType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -27,30 +28,71 @@ public class S_Neo extends Subsystem {
   // here. Call these from Commands.
   private CANSparkMax lfmoto, lbmoto, rfmoto, rbmoto;
   
-  private CANSparkMax motor1;
-  private CANEncoder encoder1;
-  private CANPIDController pidcontroller1;
-  double tareEncPosition = 0;
-  double kP = 0.1, kI = 1e-4, kD = 1,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
+  //private CANSparkMax motor1;
+  private CANEncoder encoderRight;
+  private CANEncoder encoderLeft;
+  private CANPIDController pidcontrollerR;
+  private CANPIDController pidcontrollerL;
+  double tareEncPositionR = 0;
+  double tareEncPositionL = 0;
+  double kP = 0.075, kI = 0, kD = 0,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
+  //final double rev2dist = 6*Math.PI/10.7/12;
+  final double dist2rev = 12/(6*Math.PI)*10.71; // conversion factor from distance in feet of robot movement to neo revolutions
   //double kSetpoint = 0; //in revolutions
 
   public S_Neo(){
+    
     lfmoto = new CANSparkMax(RobotMap.NEOlf, MotorType.kBrushless);
     lfmoto.restoreFactoryDefaults();
     lfmoto.setInverted(false);
+    lfmoto.setIdleMode(IdleMode.kCoast);
 
     lbmoto = new CANSparkMax(RobotMap.NEOlb, MotorType.kBrushless);
     lbmoto.restoreFactoryDefaults();
     lbmoto.setInverted(false);
+    lbmoto.setIdleMode(IdleMode.kCoast);
+    lbmoto.follow(lfmoto);
 
     rfmoto = new CANSparkMax(RobotMap.NEOrf, MotorType.kBrushless);
     rfmoto.restoreFactoryDefaults();
     rfmoto.setInverted(true);
+    rfmoto.setIdleMode(IdleMode.kCoast);
 
     rbmoto = new CANSparkMax(RobotMap.NEOrb, MotorType.kBrushless);
     rbmoto.restoreFactoryDefaults();
     rbmoto.setInverted(true);
-    
+    rbmoto.setIdleMode(IdleMode.kCoast);
+    rbmoto.follow(rfmoto);
+
+    encoderRight = rfmoto.getEncoder();
+    encoderRight = rfmoto.getEncoder(EncoderType.kHallSensor, 42);
+
+    encoderLeft = lfmoto.getEncoder();
+    encoderLeft = lfmoto.getEncoder(EncoderType.kHallSensor, 42);
+
+    pidcontrollerR = rfmoto.getPIDController();
+    pidcontrollerR.setFeedbackDevice(encoderRight);
+
+    pidcontrollerL = lfmoto.getPIDController();
+    pidcontrollerL.setFeedbackDevice(encoderLeft);
+
+    SmartDashboard.putNumber("P", kP);
+    SmartDashboard.putNumber("I", kI);
+    SmartDashboard.putNumber("D", kD);
+    SmartDashboard.putNumber("FF", kFF);
+    SmartDashboard.putNumber("MinOutput", kMinOutput);
+    SmartDashboard.putNumber("MaxOutput", kMaxOutput);
+    SmartDashboard.putNumber("Setpoint", 0);
+
+    pidcontrollerR.setP(kP);
+    pidcontrollerL.setP(kP);
+    pidcontrollerR.setI(kI);
+    pidcontrollerL.setI(kI);
+    pidcontrollerR.setD(kD);
+    pidcontrollerL.setD(kD);
+    pidcontrollerR.setOutputRange(kMinOutput, kMaxOutput);
+    pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
+
 /* no motor for now
     //pid testing
     motor1 = new CANSparkMax(RobotMap.NEO1, MotorType.kBrushless);
@@ -76,7 +118,7 @@ public class S_Neo extends Subsystem {
 */
   }
   
-/* TODO: put back
+ //TODO: put back
   public void setPID(){
     double p = SmartDashboard.getNumber("P", 0);
     double i = SmartDashboard.getNumber("I", 0);
@@ -89,50 +131,86 @@ public class S_Neo extends Subsystem {
 
     if (p != kP) {
       kP = p;
-      pidcontroller1.setP(kP);
+      pidcontrollerR.setP(kP);
+      pidcontrollerL.setP(kP);
     }
     if (i != kI) {
       kI = i;
-      pidcontroller1.setI(kI);
+      pidcontrollerR.setI(kI);
+      pidcontrollerL.setI(kI);
     }
     if (d != kD) {
       kD = d;
-      pidcontroller1.setD(kD);
+      pidcontrollerR.setD(kD);
+      pidcontrollerL.setD(kD);
     }
     if (ff != kFF) {
       kFF = ff;
-      pidcontroller1.setFF(kFF);
+      pidcontrollerR.setFF(kFF);
+      pidcontrollerL.setFF(kFF);
     }
     if (minOutput != kMinOutput || maxOutput != kMaxOutput) {
       kMinOutput = minOutput;
       kMaxOutput = maxOutput;
-      pidcontroller1.setOutputRange(kMinOutput, kMaxOutput);
+      pidcontrollerR.setOutputRange(kMinOutput, kMaxOutput);
+      pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
     }
-    
+    /*
     System.out.println("setpoint: "+ setpoint);
     System.out.println("P: "+ kP);
     System.out.println("I: "+ kI);
     System.out.println("D: "+ kD);
+    System.out.println("max output: " + pidcontrollerL.getOutputMax());
+    SmartDashboard.putNumber("applied motor output lf", lfmoto.getAppliedOutput());
+    SmartDashboard.putNumber("applied motor output rf", rfmoto.getAppliedOutput());
+    SmartDashboard.putNumber("applied motor output lb", lbmoto.getAppliedOutput());
+    SmartDashboard.putNumber("applied motor output rb", rbmoto.getAppliedOutput());
 
-    pidcontroller1.setReference(setpoint, ControlType.kPosition); //note that this should be adjusted based on relative position
+    System.out.println("applied motor output lf " + lfmoto.getAppliedOutput());
+    System.out.println("applied motor output rf " + rfmoto.getAppliedOutput());
+    System.out.println("applied motor output lb " + lbmoto.getAppliedOutput());
+    System.out.println("applied motor output rb " + rbmoto.getAppliedOutput());
+*/
+
+    // note multiply by rev 2 makes setpoint in terms of feet driven by robot
+    System.out.println(setpoint*dist2rev);
+    pidcontrollerR.setReference((setpoint*dist2rev)+ tareEncPositionR, ControlType.kPosition); //note that this should be adjusted based on relative position
+    pidcontrollerL.setReference((setpoint*dist2rev)+ tareEncPositionL, ControlType.kPosition); 
 
   }
 
   public void getSDInfo(){ //send info to smart dashboard
     SmartDashboard.putNumber("encoder position", getRelativePosition());
-    SmartDashboard.putNumber("encoder velocity", encoder1.getVelocity());
-
+    SmartDashboard.putNumber("encoder velocity Right", encoderRight.getVelocity());
   }
 
-  public void resetEncPosition(){
-    tareEncPosition = encoder1.getPosition();
+  public void resetEncPosition(){ // if this is called it kills the cpu usage due to get position so don't put in loop
+    tareEncPositionR = encoderRight.getPosition();
+    tareEncPositionL = encoderLeft.getPosition();
   }
+
+  //this is kinda useless right now
   public double getRelativePosition(){ // TODO: change to be parameterized for any encoder
-    return encoder1.getPosition(); //- tareEncPosition; TODO: make setpoints relative based
+    return encoderRight.getPosition(); //- tareEncPosition; TODO: make setpoints relative based
   }
+/*
+  public double convertEncRelative2Raw(double endpoint, String encoderID){ //TODO: don't use strings like a dumb boi :P
+    if (encoderID.equals("R")){
+      endpoint = endpoint + tareEncPositionR;
+    }
+    else if (encoderID.equals("L")){
+      endpoint = endpoint + tareEncPositionL;
+    }
+    else {
+      System.out.println("encoderID is not valid!!!"); //idk how to throw errors in java
+      throw new Error("encoderID is not valid!!!");
+    }
 
+    return endpoint;
+  }
 */
 
+/*
   public void runMotor(double left, double right){
    
     lfmoto.set(left);
@@ -142,7 +220,7 @@ public class S_Neo extends Subsystem {
     rbmoto.set(right);
 
   }
-
+*/
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
