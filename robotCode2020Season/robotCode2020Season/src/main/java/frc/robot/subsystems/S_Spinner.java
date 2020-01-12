@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,22 +7,18 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.commands.DetectColor;
-
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-/**
- * Add your docs here.
- */
-public class S_Spinner extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+public class S_Spinner extends SubsystemBase {
+  /**
+   * Creates a new S_Spinner.
+   */
   private final ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
   //private Color detectedColor;
   private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
@@ -73,11 +69,7 @@ public class S_Spinner extends Subsystem {
 
 
   @Override
-  public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
-    setDefaultCommand(new DetectColor());
+  public void periodic() {
+    // This method will be called once per scheduler run
   }
-
-
 }

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,6 +7,9 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -15,26 +18,27 @@ import com.revrobotics.EncoderType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.RobotMap;
-import frc.robot.commands.RunNeo;
+import frc.robot.Constants;
 
-/**
- * Add your docs here.
- */
-public class S_Neo extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+public class S_Neo extends SubsystemBase {
+  /**
+   * Creates a new S_Neo.
+   */
   private CANSparkMax lfmoto, lbmoto, rfmoto, rbmoto;
   
   //private CANSparkMax motor1;
+  private DifferentialDrive diffDrive;
+  public AHRS gyro = new AHRS(Port.kUSB); // multiple usb options usure if this one is correct
   private CANEncoder encoderRight;
   private CANEncoder encoderLeft;
   private CANPIDController pidcontrollerR;
   private CANPIDController pidcontrollerL;
   double tareEncPositionR = 0;
   double tareEncPositionL = 0;
+  public double kTurnP = 0, kTurnI = 0, kTurnD = 0; // probs a better way to do this than make it public
   double kP = 0.075, kI = 0, kD = 0,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
   //final double rev2dist = 6*Math.PI/10.7/12;
   final double dist2rev = 12/(6*Math.PI)*10.71; // conversion factor from distance in feet of robot movement to neo revolutions
@@ -42,23 +46,23 @@ public class S_Neo extends Subsystem {
 
   public S_Neo(){
     
-    lfmoto = new CANSparkMax(RobotMap.NEOlf, MotorType.kBrushless);
+    lfmoto = new CANSparkMax(Constants.NEOlf, MotorType.kBrushless);
     lfmoto.restoreFactoryDefaults();
     lfmoto.setInverted(false);
     lfmoto.setIdleMode(IdleMode.kCoast);
 
-    lbmoto = new CANSparkMax(RobotMap.NEOlb, MotorType.kBrushless);
+    lbmoto = new CANSparkMax(Constants.NEOlb, MotorType.kBrushless);
     lbmoto.restoreFactoryDefaults();
     lbmoto.setInverted(false);
     lbmoto.setIdleMode(IdleMode.kCoast);
     lbmoto.follow(lfmoto);
 
-    rfmoto = new CANSparkMax(RobotMap.NEOrf, MotorType.kBrushless);
+    rfmoto = new CANSparkMax(Constants.NEOrf, MotorType.kBrushless);
     rfmoto.restoreFactoryDefaults();
     rfmoto.setInverted(true);
     rfmoto.setIdleMode(IdleMode.kCoast);
 
-    rbmoto = new CANSparkMax(RobotMap.NEOrb, MotorType.kBrushless);
+    rbmoto = new CANSparkMax(Constants.NEOrb, MotorType.kBrushless);
     rbmoto.restoreFactoryDefaults();
     rbmoto.setInverted(true);
     rbmoto.setIdleMode(IdleMode.kCoast);
@@ -93,9 +97,11 @@ public class S_Neo extends Subsystem {
     pidcontrollerR.setOutputRange(kMinOutput, kMaxOutput);
     pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
 
+    diffDrive = new DifferentialDrive(lfmoto, rbmoto); //strangly in documentation it didn't see speed controller have option for CANSparkMax
+    
 /* no motor for now
     //pid testing
-    motor1 = new CANSparkMax(RobotMap.NEO1, MotorType.kBrushless);
+    motor1 = new CANSparkMax(Constants.NEO1, MotorType.kBrushless);
     motor1.restoreFactoryDefaults();
     motor1.setInverted(false);
 
@@ -184,6 +190,10 @@ public class S_Neo extends Subsystem {
     SmartDashboard.putNumber("encoder velocity Right", encoderRight.getVelocity());
   }
 
+  public void arcadeDrive(double fwd, double rot){
+    diffDrive.arcadeDrive(fwd, rot);
+  }
+
   public void resetEncPosition(){ // if this is called it kills the cpu usage due to get position so don't put in loop
     tareEncPositionR = encoderRight.getPosition();
     tareEncPositionL = encoderLeft.getPosition();
@@ -221,9 +231,9 @@ public class S_Neo extends Subsystem {
 
   }
 */
+
   @Override
-  public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    setDefaultCommand(new RunNeo());
+  public void periodic() {
+    // This method will be called once per scheduler run
   }
 }
