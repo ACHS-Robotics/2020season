@@ -47,6 +47,8 @@ public class RobotContainer {
 
     sneo.setDefaultCommand(c_runNeo);
     sspinner.setDefaultCommand(c_commandColor);
+
+    sneo.resetEncPosition();
   }
 
   /**

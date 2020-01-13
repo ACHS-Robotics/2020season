@@ -38,7 +38,7 @@ public class S_Neo extends SubsystemBase {
   private CANPIDController pidcontrollerL;
   double tareEncPositionR = 0;
   double tareEncPositionL = 0;
-  public double kTurnP = 0, kTurnI = 0, kTurnD = 0; // probs a better way to do this than make it public
+  public double kTurnP = .1, kTurnI = 0, kTurnD = 0; // probs a better way to do this than make it public
   double kP = 0.075, kI = 0, kD = 0,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
   //final double rev2dist = 6*Math.PI/10.7/12;
   final double dist2rev = 12/(6*Math.PI)*10.71; // conversion factor from distance in feet of robot movement to neo revolutions
@@ -87,6 +87,10 @@ public class S_Neo extends SubsystemBase {
     SmartDashboard.putNumber("MinOutput", kMinOutput);
     SmartDashboard.putNumber("MaxOutput", kMaxOutput);
     SmartDashboard.putNumber("Setpoint", 0);
+    SmartDashboard.putNumber("turnP", kTurnP);
+    SmartDashboard.putNumber("turnI", kTurnI);
+    SmartDashboard.putNumber("turnD", kTurnD);
+    SmartDashboard.putNumber("turnSetpoint", 0);
 
     pidcontrollerR.setP(kP);
     pidcontrollerL.setP(kP);
@@ -98,6 +102,7 @@ public class S_Neo extends SubsystemBase {
     pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
 
     diffDrive = new DifferentialDrive(lfmoto, rbmoto); //strangly in documentation it didn't see speed controller have option for CANSparkMax
+    diffDrive.setSafetyEnabled(false);
     
 /* no motor for now
     //pid testing
@@ -124,7 +129,6 @@ public class S_Neo extends SubsystemBase {
 */
   }
   
- //TODO: put back
   public void setPID(){
     double p = SmartDashboard.getNumber("P", 0);
     double i = SmartDashboard.getNumber("I", 0);
@@ -178,23 +182,24 @@ public class S_Neo extends SubsystemBase {
     System.out.println("applied motor output rb " + rbmoto.getAppliedOutput());
 */
 
-    // note multiply by rev 2 makes setpoint in terms of feet driven by robot
+    // note multiply by dist2rev makes setpoint in terms of feet driven by robot
     System.out.println(setpoint*dist2rev);
-    pidcontrollerR.setReference((setpoint*dist2rev)+ tareEncPositionR, ControlType.kPosition); //note that this should be adjusted based on relative position
+    pidcontrollerR.setReference((setpoint*dist2rev)+ tareEncPositionR, ControlType.kPosition);
     pidcontrollerL.setReference((setpoint*dist2rev)+ tareEncPositionL, ControlType.kPosition); 
 
   }
 
+/* shouldn't use this method in looping scenerios -- causes drive stutter due to cpu overload
   public void getSDInfo(){ //send info to smart dashboard
     SmartDashboard.putNumber("encoder position", getRelativePosition());
     SmartDashboard.putNumber("encoder velocity Right", encoderRight.getVelocity());
   }
-
+*/
   public void arcadeDrive(double fwd, double rot){
     diffDrive.arcadeDrive(fwd, rot);
   }
 
-  public void resetEncPosition(){ // if this is called it kills the cpu usage due to get position so don't put in loop
+  public void resetEncPosition(){
     tareEncPositionR = encoderRight.getPosition();
     tareEncPositionL = encoderLeft.getPosition();
   }
@@ -203,22 +208,7 @@ public class S_Neo extends SubsystemBase {
   public double getRelativePosition(){ // TODO: change to be parameterized for any encoder
     return encoderRight.getPosition(); //- tareEncPosition; TODO: make setpoints relative based
   }
-/*
-  public double convertEncRelative2Raw(double endpoint, String encoderID){ //TODO: don't use strings like a dumb boi :P
-    if (encoderID.equals("R")){
-      endpoint = endpoint + tareEncPositionR;
-    }
-    else if (encoderID.equals("L")){
-      endpoint = endpoint + tareEncPositionL;
-    }
-    else {
-      System.out.println("encoderID is not valid!!!"); //idk how to throw errors in java
-      throw new Error("encoderID is not valid!!!");
-    }
 
-    return endpoint;
-  }
-*/
 
 /*
   public void runMotor(double left, double right){
