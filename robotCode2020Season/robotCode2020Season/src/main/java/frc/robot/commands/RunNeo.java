@@ -6,7 +6,6 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.commands;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.S_Neo;
 
@@ -31,8 +30,8 @@ public class RunNeo extends CommandBase {
   @Override
   public void execute() {
     sub.setPID();
-    //sub.runMotor(-Robot.oi.driveController.getRawAxis(RobotMap.leftAxisY), -Robot.oi.driveController.getRawAxis(RobotMap.rightAxisY));
-    //sub.getSDInfo();
+    //sub.runMotor(RobotContainer.driveController.getRawAxis(Constants.leftAxisY), RobotContainer.driveController.getRawAxis(Constants.rightAxisY));
+    sub.getSDInfo();
   }
 
   // Called once the command ends or is interrupted.

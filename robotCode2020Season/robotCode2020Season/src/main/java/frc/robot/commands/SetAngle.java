@@ -20,6 +20,7 @@ public class SetAngle extends PIDCommand {
    * Creates a new SetAngle.
    */
   //private static double turnP = 0.05, turnI = 0, turnD =0, setpoint = 10;
+  private S_Neo sub;
 
   public SetAngle(S_Neo sub) {
 
@@ -34,19 +35,21 @@ public class SetAngle extends PIDCommand {
       // This should return the measurement
       () -> sub.gyro.getYaw(), //maybe Math.IEEtAngleEremainder(sub.gyro.getYaw(), 360) instead
       // This should return the setpoint (can also be a constant)
-      SmartDashboard.getNumber("turnSetpoint", 0), //for tuning
+      () -> SmartDashboard.getNumber("turnSetpoint", 0), //for tuning
       // This uses the output
       output -> {
         // Use the output here
-        sub.arcadeDrive(0,output);
+        sub.arcadeDrive(0,output*.1);
         //System.out.println("yaw: " + sub.gyro.getYaw());
       });
     // Use addRequirements() here to declare subsystem dependencies.
+
     System.out.println("turnP: " + SmartDashboard.getNumber("turnP", 0));
     System.out.println("turnI: " + SmartDashboard.getNumber("turnI", 0));
     System.out.println("turnD: " + SmartDashboard.getNumber("turnD", 0));
     System.out.println("turnSetpoint: " + SmartDashboard.getNumber("turnSetpoint", 0));
     addRequirements(sub);
+    this.sub = sub;
     // Configure additional PID options by calling `getController` here.
     getController().enableContinuousInput(-180, 180); // maybe change depending on the navx
     getController().setTolerance(5, 10); //copied constants (may need adjusting and put into constants.java)
@@ -56,5 +59,17 @@ public class SetAngle extends PIDCommand {
   @Override
   public boolean isFinished() {
     return getController().atSetpoint();
+  }
+
+  @Override
+  public void initialize() {
+    sub.setInversion(false, false);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    if (interrupted){
+      sub.setInversion(true, false);
+    }
   }
 }

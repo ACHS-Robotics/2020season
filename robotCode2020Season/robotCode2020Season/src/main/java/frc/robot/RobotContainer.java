@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  private final S_Neo sneo = new S_Neo();
+  public final S_Neo sneo = new S_Neo();
   private final S_Spinner sspinner = new S_Spinner();
 
 
@@ -36,7 +36,7 @@ public class RobotContainer {
   //private final SetAngle c_setAngle = new SetAngle();
 
   //controllers
-  Joystick driveController = new Joystick(Constants.logitechDriveCont);
+  public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -48,7 +48,7 @@ public class RobotContainer {
     sneo.setDefaultCommand(c_runNeo);
     sspinner.setDefaultCommand(c_commandColor);
 
-    sneo.resetEncPosition();
+    //sneo.resetEncPosition();
   }
 
   /**

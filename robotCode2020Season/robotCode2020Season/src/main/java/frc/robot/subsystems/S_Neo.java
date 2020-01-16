@@ -39,8 +39,8 @@ public class S_Neo extends SubsystemBase {
   double tareEncPositionR = 0;
   double tareEncPositionL = 0;
   public double kTurnP = .1, kTurnI = 0, kTurnD = 0; // probs a better way to do this than make it public
-  double kP = 0.075, kI = 0, kD = 0,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
-  //final double rev2dist = 6*Math.PI/10.7/12;
+  double kP = 0.075, kI = 0, kD = 1.5,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
+  final double rev2dist = 6*Math.PI/10.7/12;
   final double dist2rev = 12/(6*Math.PI)*10.71; // conversion factor from distance in feet of robot movement to neo revolutions
   //double kSetpoint = 0; //in revolutions
 
@@ -53,7 +53,7 @@ public class S_Neo extends SubsystemBase {
 
     lbmoto = new CANSparkMax(Constants.NEOlb, MotorType.kBrushless);
     lbmoto.restoreFactoryDefaults();
-    lbmoto.setInverted(false);
+    //lbmoto.setInverted(false);
     lbmoto.setIdleMode(IdleMode.kCoast);
     lbmoto.follow(lfmoto);
 
@@ -64,14 +64,14 @@ public class S_Neo extends SubsystemBase {
 
     rbmoto = new CANSparkMax(Constants.NEOrb, MotorType.kBrushless);
     rbmoto.restoreFactoryDefaults();
-    rbmoto.setInverted(true);
+    //rbmoto.setInverted(true);
     rbmoto.setIdleMode(IdleMode.kCoast);
     rbmoto.follow(rfmoto);
 
-    encoderRight = rfmoto.getEncoder();
+    //encoderRight = rfmoto.getEncoder();
     encoderRight = rfmoto.getEncoder(EncoderType.kHallSensor, 42);
 
-    encoderLeft = lfmoto.getEncoder();
+    //encoderLeft = lfmoto.getEncoder();
     encoderLeft = lfmoto.getEncoder(EncoderType.kHallSensor, 42);
 
     pidcontrollerR = rfmoto.getPIDController();
@@ -86,6 +86,7 @@ public class S_Neo extends SubsystemBase {
     SmartDashboard.putNumber("FF", kFF);
     SmartDashboard.putNumber("MinOutput", kMinOutput);
     SmartDashboard.putNumber("MaxOutput", kMaxOutput);
+    SmartDashboard.putNumber("Setpoint—Revolutions", 0);
     SmartDashboard.putNumber("Setpoint", 0);
     SmartDashboard.putNumber("turnP", kTurnP);
     SmartDashboard.putNumber("turnI", kTurnI);
@@ -101,7 +102,7 @@ public class S_Neo extends SubsystemBase {
     pidcontrollerR.setOutputRange(kMinOutput, kMaxOutput);
     pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
 
-    diffDrive = new DifferentialDrive(lfmoto, rbmoto); //strangly in documentation it didn't see speed controller have option for CANSparkMax
+    diffDrive = new DifferentialDrive(lfmoto, rfmoto); //strangly in documentation it didn't see speed controller have option for CANSparkMax
     diffDrive.setSafetyEnabled(false);
     
 /* no motor for now
@@ -189,12 +190,14 @@ public class S_Neo extends SubsystemBase {
 
   }
 
-/* shouldn't use this method in looping scenerios -- causes drive stutter due to cpu overload
+
   public void getSDInfo(){ //send info to smart dashboard
-    SmartDashboard.putNumber("encoder position", getRelativePosition());
-    SmartDashboard.putNumber("encoder velocity Right", encoderRight.getVelocity());
+    double relPos = getRelativePosition();
+    SmartDashboard.putNumber("encoder position", relPos);
+    SmartDashboard.putNumber("Setpoint—Revolutions", getRelativePosition()*rev2dist);
+  //  SmartDashboard.putNumber("encoder velocity Right", encoderRight.getVelocity());
   }
-*/
+
   public void arcadeDrive(double fwd, double rot){
     diffDrive.arcadeDrive(fwd, rot);
   }
@@ -206,11 +209,11 @@ public class S_Neo extends SubsystemBase {
 
   //this is kinda useless right now
   public double getRelativePosition(){ // TODO: change to be parameterized for any encoder
-    return encoderRight.getPosition(); //- tareEncPosition; TODO: make setpoints relative based
+    return encoderRight.getPosition() - tareEncPositionR; // TODO: maybe add for left and right
   }
 
 
-/*
+
   public void runMotor(double left, double right){
    
     lfmoto.set(left);
@@ -220,7 +223,11 @@ public class S_Neo extends SubsystemBase {
     rbmoto.set(right);
 
   }
-*/
+
+  public void setInversion(boolean right, boolean left){
+    rfmoto.setInverted(right);
+    lfmoto.setInverted(left);
+  }
 
   @Override
   public void periodic() {
