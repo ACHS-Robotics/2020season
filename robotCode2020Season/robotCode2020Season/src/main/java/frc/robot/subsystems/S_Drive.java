@@ -23,9 +23,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
-public class S_Neo extends SubsystemBase {
+public class S_Drive extends SubsystemBase {
   /**
-   * Creates a new S_Neo.
+   * Creates a new S_Drive.
    */
   private CANSparkMax lfmoto, lbmoto, rfmoto, rbmoto;
   
@@ -44,7 +44,7 @@ public class S_Neo extends SubsystemBase {
   final double dist2rev = 12/(6*Math.PI)*10.71; // conversion factor from distance in feet of robot movement to neo revolutions
   //double kSetpoint = 0; //in revolutions
 
-  public S_Neo(){
+  public S_Drive(){
     
     lfmoto = new CANSparkMax(Constants.NEOlf, MotorType.kBrushless);
     lfmoto.restoreFactoryDefaults();
@@ -104,6 +104,8 @@ public class S_Neo extends SubsystemBase {
 
     diffDrive = new DifferentialDrive(lfmoto, rfmoto); //strangly in documentation it didn't see speed controller have option for CANSparkMax
     diffDrive.setSafetyEnabled(false);
+    diffDrive.setRightSideInverted(true); //for some reason diff drive ignores the spark max inverted settings
+    //diffDrive.setDeadband(0.02); // default deadband for differentialDrive is 0.02
     
 /* no motor for now
     //pid testing
@@ -192,14 +194,17 @@ public class S_Neo extends SubsystemBase {
 
 
   public void getSDInfo(){ //send info to smart dashboard
-    double relPos = getRelativePosition();
-    SmartDashboard.putNumber("encoder position", relPos);
-    SmartDashboard.putNumber("Setpoint—Revolutions", getRelativePosition()*rev2dist);
+    double relPos = getRelativePosition(); 
+    SmartDashboard.putNumber("encoder position(revs)", relPos);
+    SmartDashboard.putNumber("encoder position(feet)", relPos*rev2dist);
   //  SmartDashboard.putNumber("encoder velocity Right", encoderRight.getVelocity());
   }
 
   public void arcadeDrive(double fwd, double rot){
     diffDrive.arcadeDrive(fwd, rot);
+  }
+  public void curveDrive(double fwd, double rot){
+    diffDrive.curvatureDrive(fwd, rot, true);
   }
 
   public void resetEncPosition(){
@@ -215,15 +220,25 @@ public class S_Neo extends SubsystemBase {
 
 
   public void runMotor(double left, double right){
-   
-    lfmoto.set(left);
-    lbmoto.set(left);
-    
-    rfmoto.set(right);
-    rbmoto.set(right);
+    if (left > 0.02 || left < -0.02){
+      lfmoto.set(left);
+      //lbmoto.set(left);
+    }
+    else {
+      lfmoto.set(0);
+    }
+
+    if (right > 0.02 || right < -0.02){
+      rfmoto.set(right);
+      //rbmoto.set(right);
+    }
+    else {
+      rfmoto.set(0);
+    }
 
   }
 
+  //maybe useless now
   public void setInversion(boolean right, boolean left){
     rfmoto.setInverted(right);
     lfmoto.setInverted(left);

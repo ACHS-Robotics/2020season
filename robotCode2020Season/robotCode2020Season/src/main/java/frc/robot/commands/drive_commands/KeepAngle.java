@@ -5,24 +5,26 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.drive_commands;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.subsystems.S_Neo;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.S_Drive;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class SetAngle extends PIDCommand {
+public class KeepAngle extends PIDCommand {
   /**
-   * Creates a new SetAngle.
+   * Creates a new KeepAngle.
    */
   //private static double turnP = 0.05, turnI = 0, turnD =0, setpoint = 10;
-  private S_Neo sub;
+  private S_Drive sub;
 
-  public SetAngle(S_Neo sub) {
+  public KeepAngle(S_Drive sub) {
 
     super(
       // The controller that the command will use
@@ -35,11 +37,11 @@ public class SetAngle extends PIDCommand {
       // This should return the measurement
       () -> sub.gyro.getYaw(), //maybe Math.IEEtAngleEremainder(sub.gyro.getYaw(), 360) instead
       // This should return the setpoint (can also be a constant)
-      () -> SmartDashboard.getNumber("turnSetpoint", 0), //for tuning
+      0, //go straight
       // This uses the output
       output -> {
         // Use the output here
-        sub.arcadeDrive(0,output*.1);
+        sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.rightAxisY),output);
         //System.out.println("yaw: " + sub.gyro.getYaw());
       });
     // Use addRequirements() here to declare subsystem dependencies.
@@ -58,18 +60,23 @@ public class SetAngle extends PIDCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return getController().atSetpoint();
+    return false;
   }
 
   @Override
   public void initialize() {
-    sub.setInversion(false, false);
+    // should not need to have this anymore thanks to diffDrive.setRightSideInverted(true)
+    //sub.setInversion(false, false);
+    sub.gyro.reset();
   }
-
+/*
   @Override
   public void end(boolean interrupted) {
     if (interrupted){
       sub.setInversion(true, false);
     }
   }
+*/
+
+
 }

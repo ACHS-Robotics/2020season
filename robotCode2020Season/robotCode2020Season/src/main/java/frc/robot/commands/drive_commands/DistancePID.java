@@ -5,17 +5,18 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.drive_commands;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.S_Neo;
+import frc.robot.subsystems.S_Drive;
 
-public class RunNeo extends CommandBase {
+public class DistancePID extends CommandBase {
   /**
-   * Creates a new RunNeo.
+   * Creates a new DistancePID.
    */
-  S_Neo sub;
+  S_Drive sub;
 
-  public RunNeo(S_Neo sub) {
+  public DistancePID(S_Drive sub) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sub);
     this.sub = sub;
@@ -30,7 +31,6 @@ public class RunNeo extends CommandBase {
   @Override
   public void execute() {
     sub.setPID();
-    //sub.runMotor(RobotContainer.driveController.getRawAxis(Constants.leftAxisY), RobotContainer.driveController.getRawAxis(Constants.rightAxisY));
     sub.getSDInfo();
   }
 

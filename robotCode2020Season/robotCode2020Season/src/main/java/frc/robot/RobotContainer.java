@@ -11,9 +11,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DetectColor;
-import frc.robot.commands.RunNeo;
-import frc.robot.commands.SetAngle;
-import frc.robot.subsystems.S_Neo;
+import frc.robot.commands.drive_commands.SetAngle;
+import frc.robot.commands.drive_commands.DistancePID;
+import frc.robot.commands.drive_commands.KeepAngle;
+import frc.robot.commands.drive_commands.ManualDrive;
+import frc.robot.subsystems.S_Drive;
 import frc.robot.subsystems.S_Spinner;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -27,12 +29,13 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  public final S_Neo sneo = new S_Neo();
+  public final S_Drive sdrive = new S_Drive();
   private final S_Spinner sspinner = new S_Spinner();
 
 
   private final DetectColor c_commandColor = new DetectColor(sspinner);
-  private final RunNeo c_runNeo = new RunNeo(sneo);
+  private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
+  //private final DistancePID c_distancePID = new DistancePID(sdrive);
   //private final SetAngle c_setAngle = new SetAngle();
 
   //controllers
@@ -45,10 +48,9 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    sneo.setDefaultCommand(c_runNeo);
+    sdrive.setDefaultCommand(c_manualDrive);
     sspinner.setDefaultCommand(c_commandColor);
 
-    //sneo.resetEncPosition();
   }
 
   /**
@@ -58,7 +60,9 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(driveController, Constants.buttonA).whileHeld(new SetAngle(sneo));
+    new JoystickButton(driveController, Constants.buttonA).whileHeld(new SetAngle(sdrive));
+    new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new DistancePID(sdrive));
+    new JoystickButton(driveController, Constants.rightBumper).whileHeld(new KeepAngle(sdrive));
   }
 
 
@@ -69,6 +73,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new SetAngle(sneo); //TODO: change this to an actual auto command
+    return new SetAngle(sdrive); //TODO: change this to an actual auto command
   }
 }
