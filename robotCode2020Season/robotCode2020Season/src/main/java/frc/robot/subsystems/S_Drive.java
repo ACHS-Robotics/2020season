@@ -49,23 +49,23 @@ public class S_Drive extends SubsystemBase {
     lfmoto = new CANSparkMax(Constants.NEOlf, MotorType.kBrushless);
     lfmoto.restoreFactoryDefaults();
     lfmoto.setInverted(false);
-    lfmoto.setIdleMode(IdleMode.kCoast);
+    lfmoto.setIdleMode(IdleMode.kBrake);
 
     lbmoto = new CANSparkMax(Constants.NEOlb, MotorType.kBrushless);
     lbmoto.restoreFactoryDefaults();
     //lbmoto.setInverted(false);
-    lbmoto.setIdleMode(IdleMode.kCoast);
+    lbmoto.setIdleMode(IdleMode.kBrake);
     lbmoto.follow(lfmoto);
 
     rfmoto = new CANSparkMax(Constants.NEOrf, MotorType.kBrushless);
     rfmoto.restoreFactoryDefaults();
     rfmoto.setInverted(true);
-    rfmoto.setIdleMode(IdleMode.kCoast);
+    rfmoto.setIdleMode(IdleMode.kBrake);
 
     rbmoto = new CANSparkMax(Constants.NEOrb, MotorType.kBrushless);
     rbmoto.restoreFactoryDefaults();
     //rbmoto.setInverted(true);
-    rbmoto.setIdleMode(IdleMode.kCoast);
+    rbmoto.setIdleMode(IdleMode.kBrake);
     rbmoto.follow(rfmoto);
 
     //encoderRight = rfmoto.getEncoder();
@@ -104,7 +104,7 @@ public class S_Drive extends SubsystemBase {
 
     diffDrive = new DifferentialDrive(lfmoto, rfmoto); //strangly in documentation it didn't see speed controller have option for CANSparkMax
     diffDrive.setSafetyEnabled(false);
-    diffDrive.setRightSideInverted(true); //for some reason diff drive ignores the spark max inverted settings
+    diffDrive.setRightSideInverted(false); //for some reason diff drive ignores the spark max inverted settings
     //diffDrive.setDeadband(0.02); // default deadband for differentialDrive is 0.02
     
 /* no motor for now
@@ -192,6 +192,19 @@ public class S_Drive extends SubsystemBase {
 
   }
 
+  public void enableCoastMode(){
+    lfmoto.setIdleMode(IdleMode.kCoast);
+    lbmoto.setIdleMode(IdleMode.kCoast);
+    rfmoto.setIdleMode(IdleMode.kCoast);
+    rbmoto.setIdleMode(IdleMode.kCoast);
+  }
+
+  public void enableBrakeMode(){
+    lfmoto.setIdleMode(IdleMode.kBrake);
+    lbmoto.setIdleMode(IdleMode.kBrake);
+    rfmoto.setIdleMode(IdleMode.kBrake);
+    rbmoto.setIdleMode(IdleMode.kBrake);
+  }
 
   public void getSDInfo(){ //send info to smart dashboard
     double relPos = getRelativePosition(); 

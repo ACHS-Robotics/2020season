@@ -21,27 +21,28 @@ public class SetAngle extends PIDCommand {
   /**
    * Creates a new SetAngle.
    */
-  //private static double turnP = 0.05, turnI = 0, turnD =0, setpoint = 10;
+  private static double turnP = 0.013, turnI = 0, turnD =0.00115, setpoint = 90;
   private S_Drive sub;
 
   public SetAngle(S_Drive sub) {
 
     super(
       // The controller that the command will use
-      //new PIDController(sub.kTurnP, sub.kTurnI, sub.kTurnD),
-      new PIDController( // for tuning
+      new PIDController(turnP, turnI, turnD),
+      /*new PIDController( // for tuning
         SmartDashboard.getNumber("turnP", 0),
         SmartDashboard.getNumber("turnI", 0),
         SmartDashboard.getNumber("turnD", 0)
-      ),
+      ),*/
       // This should return the measurement
       () -> sub.gyro.getYaw(), //maybe Math.IEEtAngleEremainder(sub.gyro.getYaw(), 360) instead
       // This should return the setpoint (can also be a constant)
-      () -> SmartDashboard.getNumber("turnSetpoint", 0), //for tuning
+      setpoint,
+      //() -> SmartDashboard.getNumber("turnSetpoint", 0), //for tuning
       // This uses the output
       output -> {
         // Use the output here
-        sub.arcadeDrive(0,output*.1);
+        sub.arcadeDrive(0,output);
         //System.out.println("yaw: " + sub.gyro.getYaw());
       });
     // Use addRequirements() here to declare subsystem dependencies.
@@ -54,13 +55,14 @@ public class SetAngle extends PIDCommand {
     this.sub = sub;
     // Configure additional PID options by calling `getController` here.
     getController().enableContinuousInput(-180, 180); // maybe change depending on the navx
-    getController().setTolerance(5, 10); //copied constants (may need adjusting and put into constants.java)
+    getController().setTolerance(0, 0); //copied constants (5,10) (may need adjusting and put into constants.java)
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return getController().atSetpoint();
+    //return getController().atSetpoint();
+    return false;
   }
 
   @Override

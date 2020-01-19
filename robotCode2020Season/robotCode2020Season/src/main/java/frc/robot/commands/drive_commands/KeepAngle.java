@@ -21,19 +21,14 @@ public class KeepAngle extends PIDCommand {
   /**
    * Creates a new KeepAngle.
    */
-  //private static double turnP = 0.05, turnI = 0, turnD =0, setpoint = 10;
+  private static double turnP = 0.013, turnI = 0, turnD =0.00115;
   private S_Drive sub;
 
   public KeepAngle(S_Drive sub) {
 
     super(
       // The controller that the command will use
-      //new PIDController(sub.kTurnP, sub.kTurnI, sub.kTurnD),
-      new PIDController( // for tuning
-        SmartDashboard.getNumber("turnP", 0),
-        SmartDashboard.getNumber("turnI", 0),
-        SmartDashboard.getNumber("turnD", 0)
-      ),
+      new PIDController(turnP, turnI, turnD),
       // This should return the measurement
       () -> sub.gyro.getYaw(), //maybe Math.IEEtAngleEremainder(sub.gyro.getYaw(), 360) instead
       // This should return the setpoint (can also be a constant)
@@ -46,15 +41,11 @@ public class KeepAngle extends PIDCommand {
       });
     // Use addRequirements() here to declare subsystem dependencies.
 
-    System.out.println("turnP: " + SmartDashboard.getNumber("turnP", 0));
-    System.out.println("turnI: " + SmartDashboard.getNumber("turnI", 0));
-    System.out.println("turnD: " + SmartDashboard.getNumber("turnD", 0));
-    System.out.println("turnSetpoint: " + SmartDashboard.getNumber("turnSetpoint", 0));
     addRequirements(sub);
     this.sub = sub;
     // Configure additional PID options by calling `getController` here.
     getController().enableContinuousInput(-180, 180); // maybe change depending on the navx
-    getController().setTolerance(5, 10); //copied constants (may need adjusting and put into constants.java)
+    getController().setTolerance(0, 0); //copied constants (may need adjusting and put into constants.java)
   }
 
   // Returns true when the command should end.
@@ -65,18 +56,7 @@ public class KeepAngle extends PIDCommand {
 
   @Override
   public void initialize() {
-    // should not need to have this anymore thanks to diffDrive.setRightSideInverted(true)
-    //sub.setInversion(false, false);
     sub.gyro.reset();
   }
-/*
-  @Override
-  public void end(boolean interrupted) {
-    if (interrupted){
-      sub.setInversion(true, false);
-    }
-  }
-*/
-
 
 }

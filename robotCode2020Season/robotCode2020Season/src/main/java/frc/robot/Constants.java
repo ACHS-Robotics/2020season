@@ -40,6 +40,12 @@ public final class Constants {
   public static final int rightBumper = 6;
   public static final int backButton = 7;
   public static final int startButton = 8;
+  public static final int dpad =  RobotContainer.driveController.getPOV(0);
+  public static final int dpadUp =  0;
+  public static final int dpadDown =  180;
+  public static final int dpadLeft =  270;
+  public static final int dpadRight =  90;
+
   //joystick axes
   public static final int leftAxisX = 0;
   public static final int leftAxisY = 1;
