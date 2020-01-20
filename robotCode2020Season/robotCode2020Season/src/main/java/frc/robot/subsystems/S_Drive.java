@@ -15,6 +15,7 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.EncoderType;
+import com.revrobotics.SparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -39,7 +40,7 @@ public class S_Drive extends SubsystemBase {
   double tareEncPositionR = 0;
   double tareEncPositionL = 0;
   public double kTurnP = .1, kTurnI = 0, kTurnD = 0; // probs a better way to do this than make it public
-  double kP = 0.075, kI = 0, kD = 1.5,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
+  double kP = 0.075, kI = 0, kIzone = 0, kD = 1.5,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
   final double rev2dist = 6*Math.PI/10.7/12;
   final double dist2rev = 12/(6*Math.PI)*10.71; // conversion factor from distance in feet of robot movement to neo revolutions
   //double kSetpoint = 0; //in revolutions
@@ -48,7 +49,7 @@ public class S_Drive extends SubsystemBase {
     
     lfmoto = new CANSparkMax(Constants.NEOlf, MotorType.kBrushless);
     lfmoto.restoreFactoryDefaults();
-    lfmoto.setInverted(false);
+    lfmoto.setInverted(true);
     lfmoto.setIdleMode(IdleMode.kBrake);
 
     lbmoto = new CANSparkMax(Constants.NEOlb, MotorType.kBrushless);
@@ -59,7 +60,7 @@ public class S_Drive extends SubsystemBase {
 
     rfmoto = new CANSparkMax(Constants.NEOrf, MotorType.kBrushless);
     rfmoto.restoreFactoryDefaults();
-    rfmoto.setInverted(true);
+    rfmoto.setInverted(false);
     rfmoto.setIdleMode(IdleMode.kBrake);
 
     rbmoto = new CANSparkMax(Constants.NEOrb, MotorType.kBrushless);
@@ -68,11 +69,11 @@ public class S_Drive extends SubsystemBase {
     rbmoto.setIdleMode(IdleMode.kBrake);
     rbmoto.follow(rfmoto);
 
-    //encoderRight = rfmoto.getEncoder();
-    encoderRight = rfmoto.getEncoder(EncoderType.kHallSensor, 42);
+    encoderRight = rfmoto.getEncoder(); //default is for neo embedded encoder
+    //encoderRight = rfmoto.getEncoder(EncoderType.kHallSensor, 42);
 
-    //encoderLeft = lfmoto.getEncoder();
-    encoderLeft = lfmoto.getEncoder(EncoderType.kHallSensor, 42);
+    encoderLeft = lfmoto.getEncoder();
+    //encoderLeft = lfmoto.getEncoder(EncoderType.kHallSensor, 42);
 
     pidcontrollerR = rfmoto.getPIDController();
     pidcontrollerR.setFeedbackDevice(encoderRight);
@@ -82,6 +83,7 @@ public class S_Drive extends SubsystemBase {
 
     SmartDashboard.putNumber("P", kP);
     SmartDashboard.putNumber("I", kI);
+    SmartDashboard.putNumber("Izone", kIzone);
     SmartDashboard.putNumber("D", kD);
     SmartDashboard.putNumber("FF", kFF);
     SmartDashboard.putNumber("MinOutput", kMinOutput);
@@ -97,15 +99,18 @@ public class S_Drive extends SubsystemBase {
     pidcontrollerL.setP(kP);
     pidcontrollerR.setI(kI);
     pidcontrollerL.setI(kI);
+    pidcontrollerR.setIZone(kIzone*dist2rev);
+    pidcontrollerL.setIZone(kIzone*dist2rev);
     pidcontrollerR.setD(kD);
     pidcontrollerL.setD(kD);
     pidcontrollerR.setOutputRange(kMinOutput, kMaxOutput);
     pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
 
-    diffDrive = new DifferentialDrive(lfmoto, rfmoto); //strangly in documentation it didn't see speed controller have option for CANSparkMax
+    diffDrive = new DifferentialDrive(lfmoto, rfmoto);
     diffDrive.setSafetyEnabled(false);
-    diffDrive.setRightSideInverted(false); //for some reason diff drive ignores the spark max inverted settings
+    diffDrive.setRightSideInverted(false); //all inversion is done beforehand
     //diffDrive.setDeadband(0.02); // default deadband for differentialDrive is 0.02
+    //diffDrive.setDeadband(0); // maybe more useful to have that value for pid
     
 /* no motor for now
     //pid testing
@@ -135,6 +140,7 @@ public class S_Drive extends SubsystemBase {
   public void setPID(){
     double p = SmartDashboard.getNumber("P", 0);
     double i = SmartDashboard.getNumber("I", 0);
+    double izone = SmartDashboard.getNumber("Izone", 0);
     double d = SmartDashboard.getNumber("D", 0);
     double ff = SmartDashboard.getNumber("FF", 0);
     double minOutput = SmartDashboard.getNumber("MinOutput", 0);
@@ -151,6 +157,11 @@ public class S_Drive extends SubsystemBase {
       kI = i;
       pidcontrollerR.setI(kI);
       pidcontrollerL.setI(kI);
+    }
+    if (i != kIzone){
+      kIzone = izone;
+      pidcontrollerR.setIZone(kIzone);
+      pidcontrollerL.setIZone(kIzone);
     }
     if (d != kD) {
       kD = d;

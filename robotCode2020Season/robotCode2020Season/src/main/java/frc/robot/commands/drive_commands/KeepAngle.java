@@ -36,7 +36,7 @@ public class KeepAngle extends PIDCommand {
       // This uses the output
       output -> {
         // Use the output here
-        sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.rightAxisY),output);
+        sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.leftAxisY),output);
         //System.out.println("yaw: " + sub.gyro.getYaw());
       });
     // Use addRequirements() here to declare subsystem dependencies.

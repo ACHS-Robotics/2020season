@@ -50,7 +50,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    sdrive.setDefaultCommand(c_setAngle);
+    sdrive.setDefaultCommand(c_distancePID);
     sspinner.setDefaultCommand(c_commandColor);
 
   }

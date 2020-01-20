@@ -17,10 +17,10 @@ package frc.robot;
  */
 public final class Constants {
     //neo sparkmaxes -- the ids on the side of the pdp with lower numbers has their can id set to 1+pdpNumber
-  public static int NEOlf = 1;
-  public static int NEOlb = 2;
-  public static int NEOrf = 14;
-  public static int NEOrb = 15;
+  public static int NEOlf = 14;
+  public static int NEOlb = 15;
+  public static int NEOrf = 1;
+  public static int NEOrb = 2;
 
   public static int NEO1 = 4; // seperate testing
 

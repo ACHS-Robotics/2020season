@@ -47,8 +47,8 @@ public class ManualDrive extends CommandBase {
     //--arcade drive - one stick
     //sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.leftAxisY), RobotContainer.driveController.getRawAxis(Constants.leftAxisX));
     //---GTA drive
-    //sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.rightTrigger) -
-    //                RobotContainer.driveController.getRawAxis(Constants.leftTrigger), //idk if trigger is an axis
+    //sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.leftTrigger) -
+    //                RobotContainer.driveController.getRawAxis(Constants.rightTrigger), //idk if trigger is an axis
     //                RobotContainer.driveController.getRawAxis(Constants.rightAxisX));
     //--curvature drive - 1 stick
     //sub.curveDrive(RobotContainer.driveController.getRawAxis(Constants.leftAxisY), RobotContainer.driveController.getRawAxis(Constants.leftAxisX));
