@@ -31,7 +31,7 @@ public class DistancePID extends CommandBase {
   @Override
   public void execute() {
     sub.setPID();
-    sub.getSDInfo();
+    //sub.getSDInfo();
   }
 
   // Called once the command ends or is interrupted.

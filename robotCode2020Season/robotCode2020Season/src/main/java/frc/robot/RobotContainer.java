@@ -7,10 +7,19 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import frc.robot.commands.DetectColor;
 import frc.robot.commands.drive_commands.SetAngle;
 import frc.robot.commands.drive_commands.DistancePID;
@@ -19,6 +28,7 @@ import frc.robot.commands.drive_commands.ManualDrive;
 import frc.robot.subsystems.S_Drive;
 import frc.robot.subsystems.S_Spinner;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
@@ -95,7 +105,36 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new SetAngle(sdrive); //TODO: change this to an actual auto command
+    TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
+    config.setKinematics(sdrive.getKinematics());
+    // An example trajectory to follow.  All units in meters.
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+      // Start at the origin facing the +X direction
+      new Pose2d(0, 0, new Rotation2d(0)),
+      // Pass through these two interior waypoints, making an 's' curve path
+      List.of(
+          new Translation2d(1, 1),
+          new Translation2d(2, -1)
+      ),
+      // End 3 meters straight ahead of where we started, facing forward
+      new Pose2d(3, 0, new Rotation2d(0)),
+      // Pass config
+      config
+    );
+
+    RamseteCommand command = new RamseteCommand(
+      trajectory,
+      sdrive::getPose,
+      new RamseteController(2.0, 0.7),
+      sdrive.getFeedforward(),
+      sdrive.getKinematics(), 
+      sdrive::getSpeeds,
+      sdrive.getLeftTrajPIDController(),
+      sdrive.getRightTrajPIDController(),
+      sdrive::setOutput,
+      sdrive
+    );
+
+    return command;
   }
 }

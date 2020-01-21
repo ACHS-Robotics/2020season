@@ -14,14 +14,20 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
-import com.revrobotics.EncoderType;
-import com.revrobotics.SparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import frc.robot.Constants;
 
 public class S_Drive extends SubsystemBase {
@@ -31,8 +37,18 @@ public class S_Drive extends SubsystemBase {
   private CANSparkMax lfmoto, lbmoto, rfmoto, rbmoto;
   
   //private CANSparkMax motor1;
-  private DifferentialDrive diffDrive;
   public AHRS gyro = new AHRS(Port.kUSB); // multiple usb options usure if this one is correct
+
+  private DifferentialDrive diffDrive;
+  
+  //trajectory stuff
+  private DifferentialDriveKinematics kinematics;
+  private DifferentialDriveOdometry odometry;
+  private Pose2d pose;
+  private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(Constants.kS, Constants.kV, Constants.kA);
+  private PIDController leftPIDController_WPI = new PIDController(Constants.kPTraj, 0, 0); //velocity controllers only have P
+  private PIDController rightPIDController_WPI = new PIDController(Constants.kPTraj, 0, 0);
+
   private CANEncoder encoderRight;
   private CANEncoder encoderLeft;
   private CANPIDController pidcontrollerR;
@@ -41,9 +57,8 @@ public class S_Drive extends SubsystemBase {
   double tareEncPositionL = 0;
   public double kTurnP = .1, kTurnI = 0, kTurnD = 0; // probs a better way to do this than make it public
   double kP = 0.075, kI = 0, kIzone = 0, kD = 1.5,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
-  final double rev2dist = 6*Math.PI/10.7/12;
-  final double dist2rev = 12/(6*Math.PI)*10.71; // conversion factor from distance in feet of robot movement to neo revolutions
-  //double kSetpoint = 0; //in revolutions
+  final double rev2dist = 6*Math.PI/Constants.driveGearRatio/12;
+  final double dist2rev = 12/(6*Math.PI)*Constants.driveGearRatio; // conversion factor from distance in feet of robot movement to neo revolutions
 
   public S_Drive(){
     
@@ -54,7 +69,6 @@ public class S_Drive extends SubsystemBase {
 
     lbmoto = new CANSparkMax(Constants.NEOlb, MotorType.kBrushless);
     lbmoto.restoreFactoryDefaults();
-    //lbmoto.setInverted(false);
     lbmoto.setIdleMode(IdleMode.kBrake);
     lbmoto.follow(lfmoto);
 
@@ -65,15 +79,12 @@ public class S_Drive extends SubsystemBase {
 
     rbmoto = new CANSparkMax(Constants.NEOrb, MotorType.kBrushless);
     rbmoto.restoreFactoryDefaults();
-    //rbmoto.setInverted(true);
     rbmoto.setIdleMode(IdleMode.kBrake);
     rbmoto.follow(rfmoto);
 
-    encoderRight = rfmoto.getEncoder(); //default is for neo embedded encoder
-    //encoderRight = rfmoto.getEncoder(EncoderType.kHallSensor, 42);
+    encoderRight = rfmoto.getEncoder();
 
     encoderLeft = lfmoto.getEncoder();
-    //encoderLeft = lfmoto.getEncoder(EncoderType.kHallSensor, 42);
 
     pidcontrollerR = rfmoto.getPIDController();
     pidcontrollerR.setFeedbackDevice(encoderRight);
@@ -112,29 +123,14 @@ public class S_Drive extends SubsystemBase {
     //diffDrive.setDeadband(0.02); // default deadband for differentialDrive is 0.02
     //diffDrive.setDeadband(0); // maybe more useful to have that value for pid
     
-/* no motor for now
-    //pid testing
-    motor1 = new CANSparkMax(Constants.NEO1, MotorType.kBrushless);
-    motor1.restoreFactoryDefaults();
-    motor1.setInverted(false);
-
-    //  encoder1 = motor1.getEncoder(); //no params uses integrated controller
-    encoder1 = motor1.getEncoder(EncoderType.kHallSensor, 42);
+    gyro.reset();
+    resetEncPosition();
+    kinematics = new DifferentialDriveKinematics(Constants.trackWidth);
+    pose = new Pose2d(); // i think this should be the same as that which is used in DifferentialDriveOdometry?
+    odometry = new DifferentialDriveOdometry(getHeading()); // may want other constructor for enabling a starting position
     
-    pidcontroller1 = motor1.getPIDController();
-    pidcontroller1.setFeedbackDevice(encoder1);
 
 
-    SmartDashboard.putNumber("P", kP);
-    SmartDashboard.putNumber("I", kI);
-    SmartDashboard.putNumber("D", kD);
-    SmartDashboard.putNumber("FF", kFF);
-    SmartDashboard.putNumber("MinOutput", kMinOutput);
-    SmartDashboard.putNumber("MaxOutput", kMaxOutput);
-    SmartDashboard.putNumber("Setpoint", 0);
-
-    setPID();
-*/
   }
   
   public void setPID(){
@@ -179,22 +175,6 @@ public class S_Drive extends SubsystemBase {
       pidcontrollerR.setOutputRange(kMinOutput, kMaxOutput);
       pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
     }
-    /*
-    System.out.println("setpoint: "+ setpoint);
-    System.out.println("P: "+ kP);
-    System.out.println("I: "+ kI);
-    System.out.println("D: "+ kD);
-    System.out.println("max output: " + pidcontrollerL.getOutputMax());
-    SmartDashboard.putNumber("applied motor output lf", lfmoto.getAppliedOutput());
-    SmartDashboard.putNumber("applied motor output rf", rfmoto.getAppliedOutput());
-    SmartDashboard.putNumber("applied motor output lb", lbmoto.getAppliedOutput());
-    SmartDashboard.putNumber("applied motor output rb", rbmoto.getAppliedOutput());
-
-    System.out.println("applied motor output lf " + lfmoto.getAppliedOutput());
-    System.out.println("applied motor output rf " + rfmoto.getAppliedOutput());
-    System.out.println("applied motor output lb " + lbmoto.getAppliedOutput());
-    System.out.println("applied motor output rb " + rbmoto.getAppliedOutput());
-*/
 
     // note multiply by dist2rev makes setpoint in terms of feet driven by robot
     System.out.println(setpoint*dist2rev);
@@ -218,7 +198,7 @@ public class S_Drive extends SubsystemBase {
   }
 
   public void getSDInfo(){ //send info to smart dashboard
-    double relPos = getRelativePosition(); 
+    double relPos = encoderRight.getPosition()-tareEncPositionR; 
     SmartDashboard.putNumber("encoder position(revs)", relPos);
     SmartDashboard.putNumber("encoder position(feet)", relPos*rev2dist);
   //  SmartDashboard.putNumber("encoder velocity Right", encoderRight.getVelocity());
@@ -235,13 +215,6 @@ public class S_Drive extends SubsystemBase {
     tareEncPositionR = encoderRight.getPosition();
     tareEncPositionL = encoderLeft.getPosition();
   }
-
-  //this is kinda useless right now
-  public double getRelativePosition(){ // TODO: change to be parameterized for any encoder
-    return encoderRight.getPosition() - tareEncPositionR; // TODO: maybe add for left and right
-  }
-
-
 
   public void runMotor(double left, double right){
     if (left > 0.02 || left < -0.02){
@@ -262,14 +235,54 @@ public class S_Drive extends SubsystemBase {
 
   }
 
-  //maybe useless now
-  public void setInversion(boolean right, boolean left){
-    rfmoto.setInverted(right);
-    lfmoto.setInverted(left);
+
+//trajecotry stuff
+
+  public Rotation2d getHeading(){
+    return Rotation2d.fromDegrees(-gyro.getAngle());
   }
+
+  public DifferentialDriveKinematics getKinematics(){
+    return kinematics;
+  }
+
+  public Pose2d getPose(){
+    return pose;
+  }
+
+  public SimpleMotorFeedforward getFeedforward(){
+    return feedforward;
+  }
+
+  public DifferentialDriveWheelSpeeds getSpeeds(){
+    return new DifferentialDriveWheelSpeeds(
+      encoderLeft.getVelocity()/Constants.driveGearRatio*Units.inchesToMeters(6.0)*Math.PI/60,
+      encoderRight.getVelocity()/Constants.driveGearRatio*Units.inchesToMeters(6.0)*Math.PI/60
+    );
+  }
+
+  public PIDController getLeftTrajPIDController(){
+    return leftPIDController_WPI;
+  }
+
+  public PIDController getRightTrajPIDController(){
+    return rightPIDController_WPI;
+  }
+
+  public void setOutput(double leftVolts, double rightVolts){
+    lfmoto.set(leftVolts/12);
+    rfmoto.set(rightVolts/12);
+  }
+//  public DifferentialDriveWheelSpeeds getDifferentialDriveWheelSpeeds(){
+//}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    pose = odometry.update( // note: if we want odometry after autonomyous then would need a seperate tare for robotInit
+      getHeading(),
+      Units.feetToMeters((encoderLeft.getPosition()-tareEncPositionL)*rev2dist),
+      Units.feetToMeters((encoderRight.getPosition()-tareEncPositionR)*rev2dist)
+    );
   }
 }

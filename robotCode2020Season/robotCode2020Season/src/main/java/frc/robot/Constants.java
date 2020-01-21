@@ -17,13 +17,23 @@ package frc.robot;
  */
 public final class Constants {
     //neo sparkmaxes -- the ids on the side of the pdp with lower numbers has their can id set to 1+pdpNumber
-  public static int NEOlf = 14;
-  public static int NEOlb = 15;
-  public static int NEOrf = 1;
-  public static int NEOrb = 2;
+  public static final int NEOlf = 14;
+  public static final int NEOlb = 15;
+  public static final int NEOrf = 1;
+  public static final int NEOrb = 2;
 
   public static int NEO1 = 4; // seperate testing
 
+  public static double driveGearRatio = 10.71;
+
+  //trajectory related value (in SI units) TODO: POPULATE VALUES
+  public static final double trackWidth = 0;
+  public static final double kS = 0;
+  public static final double kV = 0;
+  public static final double kA = 0;
+  public static final double kPTraj = 0;
+  public static final double maxTrajVelocity = 0;
+  public static final double maxTrajAcceleration = 0;
 
   //old 
 
