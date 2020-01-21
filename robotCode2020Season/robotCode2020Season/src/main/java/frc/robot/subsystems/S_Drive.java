@@ -39,7 +39,7 @@ public class S_Drive extends SubsystemBase {
   //private CANSparkMax motor1;
   public AHRS gyro = new AHRS(Port.kUSB); // multiple usb options usure if this one is correct
 
-  private DifferentialDrive diffDrive;
+  public DifferentialDrive diffDrive;
   
   //trajectory stuff
   private DifferentialDriveKinematics kinematics;
@@ -57,7 +57,7 @@ public class S_Drive extends SubsystemBase {
   double tareEncPositionL = 0;
   public double kTurnP = .1, kTurnI = 0, kTurnD = 0; // probs a better way to do this than make it public
   double kP = 0.075, kI = 0, kIzone = 0, kD = 1.5,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
-  final double rev2dist = 6*Math.PI/Constants.driveGearRatio/12;
+  final double rev2dist = 6*Math.PI/Constants.driveGearRatio/12; //TODO: place all conversion factors in Constants and clarify any varaible that uses units in the name
   final double dist2rev = 12/(6*Math.PI)*Constants.driveGearRatio; // conversion factor from distance in feet of robot movement to neo revolutions
 
   public S_Drive(){
@@ -273,8 +273,6 @@ public class S_Drive extends SubsystemBase {
     lfmoto.set(leftVolts/12);
     rfmoto.set(rightVolts/12);
   }
-//  public DifferentialDriveWheelSpeeds getDifferentialDriveWheelSpeeds(){
-//}
 
   @Override
   public void periodic() {

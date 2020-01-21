@@ -69,16 +69,18 @@ public class SetAngle extends PIDCommand {
   public void initialize() {
     // should not need to have this anymore thanks to diffDrive.setRightSideInverted(true)
     //sub.setInversion(false, false);
+    sub.diffDrive.setDeadband(0);
     sub.gyro.reset();
   }
-/*
+
   @Override
   public void end(boolean interrupted) {
     if (interrupted){
-      sub.setInversion(true, false);
+      //sub.setInversion(true, false);
+      sub.diffDrive.setDeadband(.02);
     }
   }
-*/
+
 
 
 }
