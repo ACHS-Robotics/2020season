@@ -33,10 +33,11 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 /**
- * This class is where the bulk of the robot should be declared.  Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
- * (including subsystems, commands, and button mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a "declarative" paradigm, very little robot logic should
+ * actually be handled in the {@link Robot} periodic methods (other than the
+ * scheduler calls). Instead, the structure of the robot (including subsystems,
+ * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
@@ -44,17 +45,16 @@ public class RobotContainer {
   public final S_Drive sdrive = new S_Drive();
   private final S_Spinner sspinner = new S_Spinner();
 
-
   private final DetectColor c_commandColor = new DetectColor(sspinner);
   private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
   private final DistancePID c_distancePID = new DistancePID(sdrive);
   private final SetAngle c_setAngle = new SetAngle(sdrive);
 
-  //controllers
+  // controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
 
   /**
-   * The container for the robot.  Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the button bindings
@@ -66,38 +66,37 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your button->command mappings.  Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-   * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by instantiating a {@link GenericHID} or one of its subclasses
+   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
+   * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
     new JoystickButton(driveController, Constants.buttonA).whileHeld(new SetAngle(sdrive));
-    //new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new DistancePID(sdrive));
+    // new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new
+    // DistancePID(sdrive));
     new JoystickButton(driveController, Constants.rightBumper).whileHeld(new KeepAngle(sdrive));
     new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
-      sdrive.runMotor(.5,.5);
+      sdrive.runMotor(.5, .5);
       Timer.delay(.1);
-      sdrive.runMotor(0,0);
-    },sdrive);
+      sdrive.runMotor(0, 0);
+    }, sdrive);
     new POVButton(driveController, Constants.dpadDown).whenPressed(() -> {
-      sdrive.runMotor(-.5,-.5);
+      sdrive.runMotor(-.5, -.5);
       Timer.delay(.1);
-      sdrive.runMotor(0,0);
-    },sdrive);
+      sdrive.runMotor(0, 0);
+    }, sdrive);
     new POVButton(driveController, Constants.dpadLeft).whenPressed(() -> {
-      sdrive.runMotor(-.5,.5);
+      sdrive.runMotor(-.5, .5);
       Timer.delay(.05);
-      sdrive.runMotor(0,0);
-    },sdrive);
+      sdrive.runMotor(0, 0);
+    }, sdrive);
     new POVButton(driveController, Constants.dpadRight).whenPressed(() -> {
-      sdrive.runMotor(.5,-.5);
+      sdrive.runMotor(.5, -.5);
       Timer.delay(.05);
-      sdrive.runMotor(0,0);
-    },sdrive);
+      sdrive.runMotor(0, 0);
+    }, sdrive);
   }
-
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -107,33 +106,20 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
     config.setKinematics(sdrive.getKinematics());
-    // An example trajectory to follow.  All units in meters.
+    // An example trajectory to follow. All units in meters.
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-      // Start at the origin facing the +X direction
-      new Pose2d(0, 0, new Rotation2d(0)),
-      // Pass through these two interior waypoints, making an 's' curve path
-      List.of(
-          new Translation2d(1, 1),
-          new Translation2d(2, -1)
-      ),
-      // End 3 meters straight ahead of where we started, facing forward
-      new Pose2d(3, 0, new Rotation2d(0)),
-      // Pass config
-      config
-    );
+        // Start at the origin facing the +X direction
+        new Pose2d(0, 0, new Rotation2d(0)),
+        // Pass through these two interior waypoints, making an 's' curve path
+        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        // End 3 meters straight ahead of where we started, facing forward
+        new Pose2d(3, 0, new Rotation2d(0)),
+        // Pass config
+        config);
 
-    RamseteCommand command = new RamseteCommand(
-      trajectory,
-      sdrive::getPose,
-      new RamseteController(2.0, 0.7),
-      sdrive.getFeedforward(),
-      sdrive.getKinematics(), 
-      sdrive::getSpeeds,
-      sdrive.getLeftTrajPIDController(),
-      sdrive.getRightTrajPIDController(),
-      sdrive::setOutput,
-      sdrive
-    );
+    RamseteCommand command = new RamseteCommand(trajectory, sdrive::getPose, new RamseteController(2.0, 0.7),
+        sdrive.getFeedforward(), sdrive.getKinematics(), sdrive::getSpeeds, sdrive.getLeftTrajPIDController(),
+        sdrive.getRightTrajPIDController(), sdrive::setOutput, sdrive);
 
     return command;
   }

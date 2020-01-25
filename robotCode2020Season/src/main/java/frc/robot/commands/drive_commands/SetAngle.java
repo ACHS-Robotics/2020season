@@ -19,30 +19,29 @@ public class SetAngle extends PIDCommand {
   /**
    * Creates a new SetAngle.
    */
-  private static double turnP = 0.013, turnI = 0, turnD =0.00115, setpoint = 90;
+  private static double turnP = 0.013, turnI = 0, turnD = 0.00115, setpoint = 90;
   private S_Drive sub;
 
   public SetAngle(S_Drive sub) { // TODO: make continuously editable pid values
 
     super(
-      // The controller that the command will use
-      new PIDController(turnP, turnI, turnD),
-      /*new PIDController( // for tuning
-        SmartDashboard.getNumber("turnP", 0),
-        SmartDashboard.getNumber("turnI", 0),
-        SmartDashboard.getNumber("turnD", 0)
-      ),*/
-      // This should return the measurement
-      () -> sub.gyro.getYaw(), //maybe Math.IEEtAngleEremainder(sub.gyro.getYaw(), 360) instead
-      // This should return the setpoint (can also be a constant)
-      setpoint,
-      //() -> SmartDashboard.getNumber("turnSetpoint", 0), //for tuning
-      // This uses the output
-      output -> {
-        // Use the output here
-        sub.arcadeDrive(0,output);
-        //System.out.println("yaw: " + sub.gyro.getYaw());
-      });
+        // The controller that the command will use
+        new PIDController(turnP, turnI, turnD),
+        /*
+         * new PIDController( // for tuning SmartDashboard.getNumber("turnP", 0),
+         * SmartDashboard.getNumber("turnI", 0), SmartDashboard.getNumber("turnD", 0) ),
+         */
+        // This should return the measurement
+        () -> sub.gyro.getYaw(), // maybe Math.IEEtAngleEremainder(sub.gyro.getYaw(), 360) instead
+        // This should return the setpoint (can also be a constant)
+        setpoint,
+        // () -> SmartDashboard.getNumber("turnSetpoint", 0), //for tuning
+        // This uses the output
+        output -> {
+          // Use the output here
+          sub.arcadeDrive(0, output);
+          // System.out.println("yaw: " + sub.gyro.getYaw());
+        });
     // Use addRequirements() here to declare subsystem dependencies.
 
     System.out.println("turnP: " + SmartDashboard.getNumber("turnP", 0));
@@ -53,13 +52,13 @@ public class SetAngle extends PIDCommand {
     this.sub = sub;
     // Configure additional PID options by calling `getController` here.
     getController().enableContinuousInput(-180, 180); // maybe change depending on the navx
-    getController().setTolerance(0, 0); //copied constants (5,10) (may need adjusting and put into constants.java)
+    getController().setTolerance(0, 0); // copied constants (5,10) (may need adjusting and put into constants.java)
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //return getController().atSetpoint();
+    // return getController().atSetpoint();
     return false;
   }
 
@@ -71,11 +70,9 @@ public class SetAngle extends PIDCommand {
 
   @Override
   public void end(boolean interrupted) {
-    if (interrupted){
+    if (interrupted) {
       sub.diffDrive.setDeadband(.02);
     }
   }
-
-
 
 }

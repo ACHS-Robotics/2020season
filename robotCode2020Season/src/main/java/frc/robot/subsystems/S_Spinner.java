@@ -20,35 +20,34 @@ public class S_Spinner extends SubsystemBase {
    * Creates a new S_Spinner.
    */
   private final ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
-  //private Color detectedColor;
+  // private Color detectedColor;
   private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
   private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
   private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
   private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
   private final ColorMatch colorMatcher = new ColorMatch();
 
-
-  public S_Spinner(){
+  public S_Spinner() {
     colorMatcher.addColorMatch(kBlueTarget);
     colorMatcher.addColorMatch(kGreenTarget);
     colorMatcher.addColorMatch(kRedTarget);
-    colorMatcher.addColorMatch(kYellowTarget);    
+    colorMatcher.addColorMatch(kYellowTarget);
 
   }
 
-  public Color getColor(){
+  public Color getColor() {
     return colorSensor.getColor();
   }
 
-  public void updateSBColors(){
+  public void updateSBColors() {
     Color detectedColor = colorSensor.getColor();
     SmartDashboard.putNumber("Red", detectedColor.red);
     SmartDashboard.putNumber("Green", detectedColor.green);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
-    //SmartDashboard.putNumber("IR", IR);
+    // SmartDashboard.putNumber("IR", IR);
   }
 
-  public void declareColor(){
+  public void declareColor() {
     Color detectedColor = colorSensor.getColor();
     ColorMatchResult match = colorMatcher.matchClosestColor(detectedColor);
     String colorString;
@@ -66,7 +65,6 @@ public class S_Spinner extends SubsystemBase {
 
     SmartDashboard.putString("Current Color", colorString);
   }
-
 
   @Override
   public void periodic() {

@@ -16,7 +16,7 @@ public class ManualDrive extends CommandBase {
   /**
    * Creates a new ManualDrive.
    */
-  
+
   S_Drive sub;
 
   public ManualDrive(S_Drive sub) {
@@ -33,32 +33,36 @@ public class ManualDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //ensuring positive values where wanted/expected
+    // ensuring positive values where wanted/expected
     double lyAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.leftAxisY, 0.0);
     double ryAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.rightAxisY, 0.0);
     double lxAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.leftAxisX, -90.0);
     double rxAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.rightAxisX, -90.0);
     double lTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.leftTrigger));
     double rTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.rightTrigger));
-    //TODO: make a suffleboard selector for ease of switching so drivers can try the different modes easier
-    //String controlMode = Shuffleboard.getTab("Drive")
-    //  .add("Control Mode", "Linear Tank")
-    //  .withWidget(BuiltInWidgets.kComboBoxChooser)
-    //  .withProperties(Map.of(""))
-    //switch(controlMode)
-    //--tank - linear
-    sub.runMotor(lyAxis,ryAxis);
-    //--tank - exponential joystick input conversion
-    //double kExpCurve = SmartDashboard.getNumber("kExpCurve", 3); // higher the number the faster the exponential function grows (can see desmos image)
-    //double outL = Math.signum(inL)*(Math.pow(2,kExpCurve*Math.abs(lyAxis))-1)/(Math.pow(2,kExpCurve)-1);
-    //double outR = Math.signum(inR)*(Math.pow(2,kExpCurve*Math.abs(ryAxis))-1)/(Math.pow(2,kExpCurve)-1);
-    //sub.runMotor(outL, outR);
-    //--arcade drive - one stick
-    //sub.arcadeDrive(lyAxis, lxAxis);
-    //---GTA drive
-    //sub.arcadeDrive(rTrigger - lTrigger, rxAxis);
-    //--curvature drive - 1 stick
-    //sub.curveDrive(lyAxis, lxAxis);
+    // TODO: make a suffleboard selector for ease of switching so drivers can try
+    // the different modes easier
+    // String controlMode = Shuffleboard.getTab("Drive")
+    // .add("Control Mode", "Linear Tank")
+    // .withWidget(BuiltInWidgets.kComboBoxChooser)
+    // .withProperties(Map.of(""))
+    // switch(controlMode)
+    // --tank - linear
+    sub.runMotor(lyAxis, ryAxis);
+    // --tank - exponential joystick input conversion
+    // double kExpCurve = SmartDashboard.getNumber("kExpCurve", 3); // higher the
+    // number the faster the exponential function grows (can see desmos image)
+    // double outL =
+    // Math.signum(inL)*(Math.pow(2,kExpCurve*Math.abs(lyAxis))-1)/(Math.pow(2,kExpCurve)-1);
+    // double outR =
+    // Math.signum(inR)*(Math.pow(2,kExpCurve*Math.abs(ryAxis))-1)/(Math.pow(2,kExpCurve)-1);
+    // sub.runMotor(outL, outR);
+    // --arcade drive - one stick
+    // sub.arcadeDrive(lyAxis, lxAxis);
+    // ---GTA drive
+    // sub.arcadeDrive(rTrigger - lTrigger, rxAxis);
+    // --curvature drive - 1 stick
+    // sub.curveDrive(lyAxis, lxAxis);
   }
 
   // Called once the command ends or is interrupted.

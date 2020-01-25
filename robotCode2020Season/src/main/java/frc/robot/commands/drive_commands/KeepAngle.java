@@ -20,31 +20,31 @@ public class KeepAngle extends PIDCommand {
   /**
    * Creates a new KeepAngle.
    */
-  private static double turnP = 0.013, turnI = 0, turnD =0.00115;
+  private static double turnP = 0.013, turnI = 0, turnD = 0.00115;
   private S_Drive sub;
 
   public KeepAngle(S_Drive sub) {
 
     super(
-      // The controller that the command will use
-      new PIDController(turnP, turnI, turnD),
-      // This should return the measurement
-      () -> sub.gyro.getYaw(), //maybe Math.IEEtAngleEremainder(sub.gyro.getYaw(), 360) instead
-      // This should return the setpoint (can also be a constant)
-      0, //go straight
-      // This uses the output
-      output -> {
-        // Use the output here
-        sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.leftAxisY),output);
-        //System.out.println("yaw: " + sub.gyro.getYaw());
-      });
+        // The controller that the command will use
+        new PIDController(turnP, turnI, turnD),
+        // This should return the measurement
+        () -> sub.gyro.getYaw(), // maybe Math.IEEtAngleEremainder(sub.gyro.getYaw(), 360) instead
+        // This should return the setpoint (can also be a constant)
+        0, // go straight
+        // This uses the output
+        output -> {
+          // Use the output here
+          sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.leftAxisY), output);
+          // System.out.println("yaw: " + sub.gyro.getYaw());
+        });
     // Use addRequirements() here to declare subsystem dependencies.
 
     addRequirements(sub);
     this.sub = sub;
     // Configure additional PID options by calling `getController` here.
     getController().enableContinuousInput(-180, 180); // maybe change depending on the navx
-    getController().setTolerance(0, 0); //copied constants (may need adjusting and put into constants.java)
+    getController().setTolerance(0, 0); // copied constants (may need adjusting and put into constants.java)
   }
 
   // Returns true when the command should end.

@@ -1,6 +1,6 @@
 package oi.limelightvision.constants;
 
-public class LedState {
+public final class LedState {
     /**
      * Use the LED Mode set in the current pipeline
      */
