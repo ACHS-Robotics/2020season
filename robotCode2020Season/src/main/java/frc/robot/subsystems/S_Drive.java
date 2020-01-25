@@ -17,6 +17,7 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -57,14 +58,12 @@ public class S_Drive extends SubsystemBase {
   double tareEncPositionL = 0;
   public double kTurnP = .1, kTurnI = 0, kTurnD = 0; // probs a better way to do this than make it public
   double kP = 0.075, kI = 0, kIzone = 0, kD = 1.5,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
-  final double rev2dist = 6*Math.PI/Constants.driveGearRatio/12; //TODO: place all conversion factors in Constants and clarify any varaible that uses units in the name
-  final double dist2rev = 12/(6*Math.PI)*Constants.driveGearRatio; // conversion factor from distance in feet of robot movement to neo revolutions
 
   public S_Drive(){
     
     lfmoto = new CANSparkMax(Constants.NEOlf, MotorType.kBrushless);
     lfmoto.restoreFactoryDefaults();
-    lfmoto.setInverted(true);
+    lfmoto.setInverted(false);
     lfmoto.setIdleMode(IdleMode.kBrake);
 
     lbmoto = new CANSparkMax(Constants.NEOlb, MotorType.kBrushless);
@@ -74,7 +73,7 @@ public class S_Drive extends SubsystemBase {
 
     rfmoto = new CANSparkMax(Constants.NEOrf, MotorType.kBrushless);
     rfmoto.restoreFactoryDefaults();
-    rfmoto.setInverted(false);
+    rfmoto.setInverted(true);
     rfmoto.setIdleMode(IdleMode.kBrake);
 
     rbmoto = new CANSparkMax(Constants.NEOrb, MotorType.kBrushless);
@@ -83,8 +82,12 @@ public class S_Drive extends SubsystemBase {
     rbmoto.follow(rfmoto);
 
     encoderRight = rfmoto.getEncoder();
+    encoderRight.setPositionConversionFactor(Constants.neoRevs2meters); //native is neo rotations
+    encoderRight.setVelocityConversionFactor(Constants.neoRevs2meters/60); //native is neo rotations per minute
 
     encoderLeft = lfmoto.getEncoder();
+    encoderLeft.setPositionConversionFactor(Constants.neoRevs2meters);
+    encoderLeft.setVelocityConversionFactor(Constants.neoRevs2meters/60);
 
     pidcontrollerR = rfmoto.getPIDController();
     pidcontrollerR.setFeedbackDevice(encoderRight);
@@ -99,7 +102,6 @@ public class S_Drive extends SubsystemBase {
     SmartDashboard.putNumber("FF", kFF);
     SmartDashboard.putNumber("MinOutput", kMinOutput);
     SmartDashboard.putNumber("MaxOutput", kMaxOutput);
-    SmartDashboard.putNumber("Setpoint—Revolutions", 0);
     SmartDashboard.putNumber("Setpoint", 0);
     SmartDashboard.putNumber("turnP", kTurnP);
     SmartDashboard.putNumber("turnI", kTurnI);
@@ -110,8 +112,8 @@ public class S_Drive extends SubsystemBase {
     pidcontrollerL.setP(kP);
     pidcontrollerR.setI(kI);
     pidcontrollerL.setI(kI);
-    pidcontrollerR.setIZone(kIzone*dist2rev);
-    pidcontrollerL.setIZone(kIzone*dist2rev);
+    pidcontrollerR.setIZone(kIzone);
+    pidcontrollerL.setIZone(kIzone);
     pidcontrollerR.setD(kD);
     pidcontrollerL.setD(kD);
     pidcontrollerR.setOutputRange(kMinOutput, kMaxOutput);
@@ -176,10 +178,9 @@ public class S_Drive extends SubsystemBase {
       pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
     }
 
-    // note multiply by dist2rev makes setpoint in terms of feet driven by robot
-    System.out.println(setpoint*dist2rev);
-    pidcontrollerR.setReference((setpoint*dist2rev)+ tareEncPositionR, ControlType.kPosition);
-    pidcontrollerL.setReference((setpoint*dist2rev)+ tareEncPositionL, ControlType.kPosition); 
+    // setpoints should be in meters
+    pidcontrollerR.setReference(setpoint + tareEncPositionR, ControlType.kPosition);
+    pidcontrollerL.setReference(setpoint + tareEncPositionL, ControlType.kPosition); 
 
   }
 
@@ -197,12 +198,6 @@ public class S_Drive extends SubsystemBase {
     rbmoto.setIdleMode(IdleMode.kBrake);
   }
 
-  public void getSDInfo(){ //send info to smart dashboard
-    double relPos = encoderRight.getPosition()-tareEncPositionR; 
-    SmartDashboard.putNumber("encoder position(revs)", relPos);
-    SmartDashboard.putNumber("encoder position(feet)", relPos*rev2dist);
-  //  SmartDashboard.putNumber("encoder velocity Right", encoderRight.getVelocity());
-  }
 
   public void arcadeDrive(double fwd, double rot){
     diffDrive.arcadeDrive(fwd, rot);
@@ -235,6 +230,51 @@ public class S_Drive extends SubsystemBase {
 
   }
 
+  public void put_SB_Dist_PID_Info(){
+    //TODO: make pid graphs
+  }
+
+    /**
+   * Translates the sign of the joystick value to fit a 180 degree range of allowed positive degrees.
+   * Likely won't actually have this in the competition code, I just got annoyed with the format of
+   * negative values on the f310 (also coding for fun).
+   * 
+   * @param joystick The controller from which the axis is gotten.
+   * @param axis The axis from which the axis magnitude value from [-1, 1] is gotten.
+   * @param minPosDegrees The reference point on a unit circle which indicates the lower bound
+   *                      of a 180 degree interval that should be marked as positive.
+   *                      only actual sensible values would be 0, 90, 180, or 270 (or periodic equivalents).
+   * @return the raw axis magnitude with clarified sign/direction in the dimention of the given axis.
+   * */
+  public double getTranslatedJoystickAxisValue(Joystick joystick, int axis, double minPosDegrees){ 
+    //these axes port tranlations only work for the F310 Logitech gamepad
+    if (axis%2 == 0) {
+      joystick.setXChannel(axis);
+      joystick.setYChannel(axis+1);
+    }
+    else {
+      joystick.setXChannel(axis-1);
+      joystick.setYChannel(axis);
+    }
+    double axisAngle = Math.IEEEremainder(-joystick.getDirectionDegrees()+90,360); //given angle starting from positive y-axis positive in clockwise direction
+    SmartDashboard.putNumber("axisAngle", axisAngle);
+    double maxPosDegrees = minPosDegrees+180.0;
+    minPosDegrees = Math.IEEEremainder(minPosDegrees, 360);
+    maxPosDegrees = Math.IEEEremainder(maxPosDegrees, 360);
+    double output;
+    //there's probs a better way to state and format this if statement
+    if ((minPosDegrees < maxPosDegrees && (axisAngle < maxPosDegrees && axisAngle > minPosDegrees))
+        || (minPosDegrees > maxPosDegrees && ((axisAngle > maxPosDegrees && axisAngle > minPosDegrees) 
+                                              || (axisAngle < maxPosDegrees && axisAngle < minPosDegrees)))) {
+      output = Math.abs(joystick.getRawAxis(axis));
+    }
+    else {
+      output = -Math.abs(joystick.getRawAxis(axis));
+    }
+    
+    return output;
+  }
+
 
 //trajecotry stuff
 
@@ -256,8 +296,8 @@ public class S_Drive extends SubsystemBase {
 
   public DifferentialDriveWheelSpeeds getSpeeds(){
     return new DifferentialDriveWheelSpeeds(
-      encoderLeft.getVelocity()/Constants.driveGearRatio*Units.inchesToMeters(6.0)*Math.PI/60,
-      encoderRight.getVelocity()/Constants.driveGearRatio*Units.inchesToMeters(6.0)*Math.PI/60
+      encoderLeft.getVelocity(),
+      encoderRight.getVelocity()
     );
   }
 
@@ -279,8 +319,8 @@ public class S_Drive extends SubsystemBase {
     // This method will be called once per scheduler run
     pose = odometry.update( // note: if we want odometry after autonomyous then would need a seperate tare for robotInit
       getHeading(),
-      Units.feetToMeters((encoderLeft.getPosition()-tareEncPositionL)*rev2dist),
-      Units.feetToMeters((encoderRight.getPosition()-tareEncPositionR)*rev2dist)
+      encoderLeft.getPosition()-tareEncPositionL,
+      encoderRight.getPosition()-tareEncPositionR
     );
   }
 }

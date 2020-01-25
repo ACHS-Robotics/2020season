@@ -10,8 +10,6 @@ package frc.robot.commands.drive_commands;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.S_Drive;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -24,7 +22,7 @@ public class SetAngle extends PIDCommand {
   private static double turnP = 0.013, turnI = 0, turnD =0.00115, setpoint = 90;
   private S_Drive sub;
 
-  public SetAngle(S_Drive sub) {
+  public SetAngle(S_Drive sub) { // TODO: make continuously editable pid values
 
     super(
       // The controller that the command will use
@@ -67,8 +65,6 @@ public class SetAngle extends PIDCommand {
 
   @Override
   public void initialize() {
-    // should not need to have this anymore thanks to diffDrive.setRightSideInverted(true)
-    //sub.setInversion(false, false);
     sub.diffDrive.setDeadband(0);
     sub.gyro.reset();
   }
@@ -76,7 +72,6 @@ public class SetAngle extends PIDCommand {
   @Override
   public void end(boolean interrupted) {
     if (interrupted){
-      //sub.setInversion(true, false);
       sub.diffDrive.setDeadband(.02);
     }
   }

@@ -10,9 +10,9 @@
     # you allowed differentialDrive to automatically invert them (for us both
     # masters should have the same inversion.
     # Inversions for the left-side motors
-    "leftMotorsInverted": [True, False],
+    "leftMotorsInverted": [False, False],
     # Inversions for the right side motors
-    "rightMotorsInverted": [True, False],
+    "rightMotorsInverted": [False, False],
     # The total gear reduction between the motor and the wheels, expressed as
     # a fraction [motor turns]/[wheel turns]
     "gearing": 10.71,
@@ -30,4 +30,5 @@
     # "" (NavX using default SPI, ADXRS450 using onboard CS0, or no gyro)
     "gyroPort": "SerialPort.Port.kUSB",
 }
+
 

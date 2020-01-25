@@ -7,6 +7,10 @@
 
 package frc.robot.commands.drive_commands;
 
+import java.util.Map;
+
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -34,24 +38,32 @@ public class ManualDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //ensuring positive values where wanted/expected
+    double lyAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.leftAxisY, 0.0);
+    double ryAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.rightAxisY, 0.0);
+    double lxAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.leftAxisX, -90.0);
+    double rxAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.rightAxisX, -90.0);
+    double lTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.leftTrigger));
+    double rTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.rightTrigger));
     //TODO: make a suffleboard selector for ease of switching so drivers can try the different modes easier
+    //String controlMode = Shuffleboard.getTab("Drive")
+    //  .add("Control Mode", "Linear Tank")
+    //  .withWidget(BuiltInWidgets.kComboBoxChooser)
+    //  .withProperties(Map.of(""))
+    //switch(controlMode)
     //--tank - linear
-    sub.runMotor(RobotContainer.driveController.getRawAxis(Constants.leftAxisY), RobotContainer.driveController.getRawAxis(Constants.rightAxisY));
+    sub.runMotor(lyAxis,ryAxis);
     //--tank - exponential joystick input conversion
     //double kExpCurve = SmartDashboard.getNumber("kExpCurve", 3); // higher the number the faster the exponential function grows (can see desmos image)
-    //double inL = RobotContainer.driveController.getRawAxis(Constants.leftAxisY);
-    //double inR = RobotContainer.driveController.getRawAxis(Constants.rightAxisY);
-    //double outL = Math.signum(inL)*(Math.pow(2,kExpCurve*Math.abs(inL))-1)/(Math.pow(2,kExpCurve)-1);
-    //double outR = Math.signum(inR)*(Math.pow(2,kExpCurve*Math.abs(inR))-1)/(Math.pow(2,kExpCurve)-1);
+    //double outL = Math.signum(inL)*(Math.pow(2,kExpCurve*Math.abs(lyAxis))-1)/(Math.pow(2,kExpCurve)-1);
+    //double outR = Math.signum(inR)*(Math.pow(2,kExpCurve*Math.abs(ryAxis))-1)/(Math.pow(2,kExpCurve)-1);
     //sub.runMotor(outL, outR);
     //--arcade drive - one stick
-    //sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.leftAxisY), RobotContainer.driveController.getRawAxis(Constants.leftAxisX));
+    //sub.arcadeDrive(lyAxis, lxAxis);
     //---GTA drive
-    //sub.arcadeDrive(RobotContainer.driveController.getRawAxis(Constants.leftTrigger) -
-    //                RobotContainer.driveController.getRawAxis(Constants.rightTrigger), //idk if trigger is an axis
-    //                RobotContainer.driveController.getRawAxis(Constants.rightAxisX));
+    //sub.arcadeDrive(rTrigger - lTrigger, rxAxis);
     //--curvature drive - 1 stick
-    //sub.curveDrive(RobotContainer.driveController.getRawAxis(Constants.leftAxisY), RobotContainer.driveController.getRawAxis(Constants.leftAxisX));
+    //sub.curveDrive(lyAxis, lxAxis);
   }
 
   // Called once the command ends or is interrupted.

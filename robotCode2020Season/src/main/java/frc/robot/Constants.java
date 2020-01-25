@@ -22,9 +22,13 @@ public final class Constants {
   public static final int NEOrf = 1;
   public static final int NEOrb = 2;
 
-  public static int NEO1 = 4; // seperate testing
+  public static final int NEO1 = 4; // seperate testing
 
-  public static double driveGearRatio = 10.71;
+  public static final double driveGearRatio = 10.71;
+
+  //conversion factors
+  public static final double neoRevs2meters = 0.1524*Math.PI/driveGearRatio;
+  public static final double meters2NeoRevs = 1/neoRevs2meters;
 
   //trajectory related value (in SI units) TODO: POPULATE VALUES
   public static final double trackWidth = 0;

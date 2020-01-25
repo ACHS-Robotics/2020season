@@ -74,13 +74,13 @@ public class Robot extends TimedRobot {
     stick = new Joystick(0);
 
     leftMaster = new CANSparkMax(14, MotorType.kBrushless);
-    leftMaster.setInverted(true);
+    leftMaster.setInverted(false);
     leftMaster.setIdleMode(IdleMode.kBrake);
 
     leftEncoder = leftMaster.getEncoder();
 
     rightMaster = new CANSparkMax(1, MotorType.kBrushless);
-    rightMaster.setInverted(true);
+    rightMaster.setInverted(false);
     rightMaster.setIdleMode(IdleMode.kBrake);
 
     rightEncoder = rightMaster.getEncoder();
