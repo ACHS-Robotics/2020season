@@ -45,7 +45,7 @@ public class KeepAngle extends PIDCommand {
     this.sub = sub;
     // Configure additional PID options by calling `getController` here.
     getController().enableContinuousInput(-180, 180); // maybe change depending on the navx
-    getController().setTolerance(0, 0); //copied constants (may need adjusting and put into constants.java)
+    getController().setTolerance(0, 0); //copied constants (5,10) (may need adjusting and put into constants.java)
   }
 
   // Returns true when the command should end.

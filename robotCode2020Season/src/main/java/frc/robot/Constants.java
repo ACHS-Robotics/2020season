@@ -23,6 +23,7 @@ public final class Constants {
   public static final int NEOrb = 2;
 
   public static final int NEO1 = 4; // seperate testing
+  public static final int climbMotoPort = 12;
 
   public static final double driveGearRatio = 10.71;
 

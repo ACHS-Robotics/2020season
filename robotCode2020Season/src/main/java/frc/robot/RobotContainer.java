@@ -22,10 +22,12 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import frc.robot.commands.DetectColor;
 import frc.robot.commands.drive_commands.SetAngle;
+import frc.robot.commands.SetLinearActuatorLength;
 import frc.robot.commands.drive_commands.DistancePID;
 import frc.robot.commands.drive_commands.KeepAngle;
 import frc.robot.commands.drive_commands.ManualDrive;
 import frc.robot.subsystems.S_Drive;
+import frc.robot.subsystems.S_PushClimb;
 import frc.robot.subsystems.S_Spinner;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -41,14 +43,17 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
+  
   public final S_Drive sdrive = new S_Drive();
   private final S_Spinner sspinner = new S_Spinner();
-
+  private final S_PushClimb spushClimb = new S_PushClimb();
 
   private final DetectColor c_commandColor = new DetectColor(sspinner);
   private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
   private final DistancePID c_distancePID = new DistancePID(sdrive);
   private final SetAngle c_setAngle = new SetAngle(sdrive);
+
+  private final SetLinearActuatorLength m_setLinearActuatorLength = new SetLinearActuatorLength(spushClimb);
 
   //controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
@@ -59,9 +64,9 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-
-    sdrive.setDefaultCommand(c_distancePID);
-    sspinner.setDefaultCommand(c_commandColor);
+    spushClimb.setDefaultCommand(m_setLinearActuatorLength);
+ //temp  sdrive.setDefaultCommand(c_distancePID);
+ //temp   sspinner.setDefaultCommand(c_commandColor);
 
   }
 
@@ -95,6 +100,19 @@ public class RobotContainer {
       Timer.delay(.05);
       sdrive.runMotor(0,0);
     },sdrive);
+    /*
+    new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
+      spushClimb.setMotorOutput(.3);
+      Timer.delay(.1);
+      spushClimb.setMotorOutput(0);
+      System.out.println("pot:" + spushClimb.getExtendedLength());
+    },spushClimb);
+    new POVButton(driveController, Constants.dpadDown).whenPressed(() -> {
+      spushClimb.setMotorOutput(-.3);
+      Timer.delay(.1);
+      spushClimb.setMotorOutput(0);
+    },spushClimb);
+    */
   }
 
 
