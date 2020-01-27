@@ -28,11 +28,11 @@ public final class Constants {
 
   public static final double driveGearRatio = 10.71;
 
-  //color indices
+  //color indices -- in counter clockwise order
   public static final int kBlue = 0;
-  public static final int kRed = 1;
-  public static final int kGreen = 2;
-  public static final int kYellow = 3;
+  public static final int kYellow = 1;
+  public static final int kRed = 2;
+  public static final int kGreen = 3;
   public static final int kUnknown = 4;
 
   //conversion factors
@@ -53,6 +53,7 @@ public final class Constants {
 
   //controllers
   public static final int logitechDriveCont = 0;
+  public static final int logitechWeaponsCont = 1;
   public static final int gamecubeWeaponsCont = 1;
   //logitech button
   public static final int buttonA = 1;

@@ -20,7 +20,9 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import frc.robot.commands.spinner_commands.ColorControl;
 import frc.robot.commands.spinner_commands.DetectColor;
+import frc.robot.commands.spinner_commands.ManualSpinner;
 import frc.robot.commands.spinner_commands.RotationControl;
 import frc.robot.commands.drive_commands.SetAngle;
 import frc.robot.commands.SetLinearActuatorLength;
@@ -54,11 +56,14 @@ public class RobotContainer {
   private final DistancePID c_distancePID = new DistancePID(sdrive);
   private final SetAngle c_setAngle = new SetAngle(sdrive);
   public final RotationControl c_rotationControl = new RotationControl(sspinner);
+  //public final ColorControl c_colorControl = new ColorControl(sspinner);
+  public final ManualSpinner c_manualSpinner = new ManualSpinner(sspinner);
 
   //private final SetLinearActuatorLength m_setLinearActuatorLength = new SetLinearActuatorLength(spushClimb);
 
   //controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
+  public static Joystick weaponsController = new Joystick(Constants.logitechWeaponsCont);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -80,7 +85,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /*new JoystickButton(driveController, Constants.buttonA).whileHeld(new SetAngle(sdrive));
-    //new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new DistancePID(sdrive));
+    //new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new DistancePID(sdrive)); //TODO: learn how toggle works (doesn't seem to work how i think it does)
     new JoystickButton(driveController, Constants.rightBumper).whileHeld(new KeepAngle(sdrive));
     new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
       sdrive.runMotor(.5,.5);
@@ -120,6 +125,13 @@ public class RobotContainer {
     new JoystickButton(driveController, Constants.rightBumper).whenPressed(new SetLinearActuatorLength(spushClimb, 11.9));
 
     new JoystickButton(driveController, Constants.buttonX).whenPressed(c_rotationControl);
+
+    //matches colors on buttons
+    new JoystickButton(weaponsController, Constants.buttonX).whenPressed(new ColorControl(sspinner, Constants.kBlue));
+    new JoystickButton(weaponsController, Constants.buttonY).whenPressed(new ColorControl(sspinner, Constants.kYellow));
+    new JoystickButton(weaponsController, Constants.buttonB).whenPressed(new ColorControl(sspinner, Constants.kRed));
+    new JoystickButton(weaponsController, Constants.buttonA).whenPressed(new ColorControl(sspinner, Constants.kGreen));
+    new JoystickButton(weaponsController, Constants.rightBumper).whenPressed(c_manualSpinner);
   }
 
 

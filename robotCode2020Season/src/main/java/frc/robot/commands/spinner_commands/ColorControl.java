@@ -14,25 +14,21 @@ import frc.robot.subsystems.S_Spinner;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class RotationControl extends PIDCommand {
+public class ColorControl extends PIDCommand {
   /**
-   * Creates a new RotationControl.
+   * Creates a new ColorControl.
    */
 
   private S_Spinner sub;
 
-  public RotationControl(S_Spinner sub) {
+  public ColorControl(S_Spinner sub, int setpointColor) {
     super(
         // The controller that the command will use
-        new PIDController(0.3, 0, 0), 
+        new PIDController(1, 0, 0), // since the furthest away the color will ever be is 2 then just go full speed till you get to it? (P just needs to be 1 or greater?)
         // This should return the measurement
-        () -> {
-          int[] list = sub.getColorList();
-          return (double)(list[0]+list[1]+list[2]+list[3]); // this may just straigt up just not work thanks to input not being continuous
-          //^may not need to cast to double
-        }, // TODO:may want to have some dectection for any errors in sensing colors in order
+        () -> -sub.getDistFromColor(setpointColor), // negation is used to get correct output sign (could also make this 0 and have a positive lambda function in the third argument)
         // This should return the setpoint (can also be a constant)
-        32.0, // number of colors
+        0,
         // This uses the output
         output -> {
           // Use the output here
@@ -40,10 +36,9 @@ public class RotationControl extends PIDCommand {
         });
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sub);
+    this.sub = sub;
     // Configure additional PID options by calling `getController` here.
     getController().setTolerance(0.0);
-    this.sub = sub;
-    
   }
 
   @Override

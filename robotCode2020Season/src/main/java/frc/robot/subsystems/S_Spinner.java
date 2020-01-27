@@ -34,8 +34,9 @@ public class S_Spinner extends SubsystemBase {
   private final ColorMatch colorMatcher = new ColorMatch();
   private CANSparkMax motor;
   private CANEncoder encoder;
-  private int previousColor = -1;
+  private static int previousColor = -1;
   private int[] colorList = new int[5]; 
+  private static int currentColor;
 
 
   public S_Spinner(){
@@ -44,7 +45,9 @@ public class S_Spinner extends SubsystemBase {
     colorMatcher.addColorMatch(kRedTarget);
     colorMatcher.addColorMatch(kYellowTarget);
     
-
+    //make prevousColor have an actual color value;
+    updateColorList();
+    resetColorListCounters();
   }
 
   public Color getColor(){
@@ -59,30 +62,34 @@ public class S_Spinner extends SubsystemBase {
     //SmartDashboard.putNumber("IR", IR);
     motor = new CANSparkMax(Constants.spinnerMotoPort, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
-    motor.setInverted(false); // TODO: may need to change inversion
+    motor.setInverted(false); // TODO: may need to change inversion -- values assumed to be big wheel is spun counterclockwise with positive percent output
     motor.setIdleMode(IdleMode.kBrake);
     //encoder = new CANEncoder(motor);
 
 
   }
 
+  //get the shortest distance from the currentColor to the setpointColor with positive distance being counter clockwise on the wheel
+  public int getDistFromColor(int setpointColor){ // should be in terms of the color constants TODO: may want to take into account poissibility of getting unknown color
+    return (int)Math.IEEEremainder(Math.IEEEremainder((double)(setpointColor), 4.0)-Math.IEEEremainder((double)(currentColor), 4.0), 4);
+  }
+
   public void updateColorList(){
     Color detectedColor = colorSensor.getColor();
     ColorMatchResult match = colorMatcher.matchClosestColor(detectedColor);
-    int currentColor;
     if (match.color == kBlueTarget) {
       currentColor = Constants.kBlue;
-    } else if (match.color == kRedTarget) {
-      currentColor = Constants.kBlue;
-    } else if (match.color == kGreenTarget) {
-      currentColor = Constants.kBlue;
     } else if (match.color == kYellowTarget) {
-      currentColor = Constants.kBlue;
+      currentColor = Constants.kYellow;
+    } else if (match.color == kRedTarget) {
+      currentColor = Constants.kRed;
+    } else if (match.color == kGreenTarget) {
+      currentColor = Constants.kGreen;
     } else {
-      currentColor = Constants.kBlue;
+      currentColor = Constants.kUnknown;
     }
 
-    if (currentColor != previousColor){
+    if (currentColor != previousColor){ // color change happens
       colorList[currentColor]++;
       previousColor = currentColor;
     }
@@ -90,7 +97,7 @@ public class S_Spinner extends SubsystemBase {
 
   public void resetColorListCounters(){
     colorList = new int[5];
-    previousColor = -1;
+    previousColor = currentColor;
   }
 
   public int[] getColorList(){
@@ -116,6 +123,9 @@ public class S_Spinner extends SubsystemBase {
     SmartDashboard.putString("Current Color", colorString);
   }
 
+  public void runMotor(double percent){
+    motor.set(percent);
+  }
 
   @Override
   public void periodic() {
