@@ -20,7 +20,8 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import frc.robot.commands.DetectColor;
+import frc.robot.commands.spinner_commands.DetectColor;
+import frc.robot.commands.spinner_commands.RotationControl;
 import frc.robot.commands.drive_commands.SetAngle;
 import frc.robot.commands.SetLinearActuatorLength;
 import frc.robot.commands.drive_commands.DistancePID;
@@ -52,8 +53,9 @@ public class RobotContainer {
   private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
   private final DistancePID c_distancePID = new DistancePID(sdrive);
   private final SetAngle c_setAngle = new SetAngle(sdrive);
+  public final RotationControl c_rotationControl = new RotationControl(sspinner);
 
-  private final SetLinearActuatorLength m_setLinearActuatorLength = new SetLinearActuatorLength(spushClimb);
+  //private final SetLinearActuatorLength m_setLinearActuatorLength = new SetLinearActuatorLength(spushClimb);
 
   //controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
@@ -64,7 +66,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-    spushClimb.setDefaultCommand(m_setLinearActuatorLength);
+    //spushClimb.setDefaultCommand(m_setLinearActuatorLength);
  //temp  sdrive.setDefaultCommand(c_distancePID);
  //temp   sspinner.setDefaultCommand(c_commandColor);
 
@@ -77,7 +79,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(driveController, Constants.buttonA).whileHeld(new SetAngle(sdrive));
+    /*new JoystickButton(driveController, Constants.buttonA).whileHeld(new SetAngle(sdrive));
     //new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new DistancePID(sdrive));
     new JoystickButton(driveController, Constants.rightBumper).whileHeld(new KeepAngle(sdrive));
     new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
@@ -100,19 +102,24 @@ public class RobotContainer {
       Timer.delay(.05);
       sdrive.runMotor(0,0);
     },sdrive);
-    /*
+    */
     new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
       spushClimb.setMotorOutput(.3);
       Timer.delay(.1);
       spushClimb.setMotorOutput(0);
-      System.out.println("pot:" + spushClimb.getExtendedLength());
+      System.out.println("pot:" + spushClimb.getPercentExtended());
     },spushClimb);
     new POVButton(driveController, Constants.dpadDown).whenPressed(() -> {
       spushClimb.setMotorOutput(-.3);
       Timer.delay(.1);
       spushClimb.setMotorOutput(0);
+      System.out.println("pot:" + spushClimb.getPercentExtended());
     },spushClimb);
-    */
+
+    new JoystickButton(driveController, Constants.leftBumper).whenPressed(new SetLinearActuatorLength(spushClimb, 0.0));
+    new JoystickButton(driveController, Constants.rightBumper).whenPressed(new SetLinearActuatorLength(spushClimb, 11.9));
+
+    new JoystickButton(driveController, Constants.buttonX).whenPressed(c_rotationControl);
   }
 
 

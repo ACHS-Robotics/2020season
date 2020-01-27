@@ -5,51 +5,55 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.spinner_commands;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.subsystems.S_PushClimb;
+import frc.robot.subsystems.S_Spinner;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class SetLinearActuatorLength extends PIDCommand {
+public class RotationControl extends PIDCommand {
   /**
-   * Creates a new SetLinearActuatorLength.
+   * Creates a new RotationControl.
    */
-  S_PushClimb sub;
-  double setpoint;
-  
-  public SetLinearActuatorLength(S_PushClimb sub, double setpointInInches) {
+
+  private S_Spinner sub;
+
+  public RotationControl(S_Spinner sub) {
     super(
         // The controller that the command will use
-        new PIDController(20, 0, 0), //may need to raise P or add I for when there is a load on the actuator
+        new PIDController(0.3, 0, 0), 
         // This should return the measurement
-        () -> sub.getPercentExtended(),
+        () -> {
+          int[] list = sub.getColorList();
+          return list[0]+list[1]+list[2]+list[3]; // this may just straigt up just not work thanks to input not being continuous
+        }, // TODO:may want to have some dectection for any errors in sensing colors in order
         // This should return the setpoint (can also be a constant)
-        setpointInInches/12.0,
+        32, // number of colors
         // This uses the output
         output -> {
           // Use the output here
-          sub.setMotorOutput(output);
-          //System.out.println("Actuator length" + sub.getPercentExtended());
         });
+    // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sub);
-    this.sub = sub;
-    this.setpoint = setpointInInches;
     // Configure additional PID options by calling `getController` here.
-    getController().setTolerance(0.01, 0); //at sepoint within 1 percent of a foot
+    getController().setTolerance(0);
+    this.sub = sub;
+    
+  }
+
+  @Override
+  public void initialize() {
+    // TODO Auto-generated method stub
+    super.initialize();
+    sub.resetColorListCounters();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    boolean illegalSetpointRange = false;
-    if (setpoint < 0.0 && setpoint > 12.0){
-      System.out.println("problematic linear acturator setpoint!");
-      illegalSetpointRange = true;
-    }
-    return getController().atSetpoint() || illegalSetpointRange;
+    return getController().atSetpoint();
   }
 }

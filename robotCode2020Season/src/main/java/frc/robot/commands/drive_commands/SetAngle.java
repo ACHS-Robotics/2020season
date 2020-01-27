@@ -65,6 +65,8 @@ public class SetAngle extends PIDCommand {
 
   @Override
   public void initialize() {
+    // TODO Auto-generated method stub
+    super.initialize();
     sub.diffDrive.setDeadband(0);
     sub.gyro.reset();
   }

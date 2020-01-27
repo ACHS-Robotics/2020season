@@ -27,11 +27,11 @@ public class S_PushClimb extends SubsystemBase {
     motor.restoreFactoryDefaults();
     motor.setInverted(true);
     motor.setIdleMode(IdleMode.kBrake);
-    pot = new AnalogPotentiometer(3, 12.0/5.0);
+    pot = new AnalogPotentiometer(3);
   }
 
-  public double getExtendedLength(){ // returns inches
-    return pot.get();
+  public double getPercentExtended(){ // returns range ~0 to ~1
+    return (-(pot.get()-1))/0.87; // 0.87 is experimental constant based on the pot return values from min and max length
   }
 
   public void setMotorOutput(double percent){

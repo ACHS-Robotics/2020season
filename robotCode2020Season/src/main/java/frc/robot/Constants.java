@@ -24,8 +24,16 @@ public final class Constants {
 
   public static final int NEO1 = 4; // seperate testing
   public static final int climbMotoPort = 12;
+  public static final int spinnerMotoPort = -1; //TODO: finalize port number
 
   public static final double driveGearRatio = 10.71;
+
+  //color indices
+  public static final int kBlue = 0;
+  public static final int kRed = 1;
+  public static final int kGreen = 2;
+  public static final int kYellow = 3;
+  public static final int kUnknown = 4;
 
   //conversion factors
   public static final double neoRevs2meters = 0.1524*Math.PI/driveGearRatio;

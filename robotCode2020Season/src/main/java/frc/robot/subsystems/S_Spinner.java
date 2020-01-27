@@ -7,13 +7,19 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class S_Spinner extends SubsystemBase {
   /**
@@ -26,13 +32,18 @@ public class S_Spinner extends SubsystemBase {
   private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
   private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
   private final ColorMatch colorMatcher = new ColorMatch();
+  private CANSparkMax motor;
+  private CANEncoder encoder;
+  private int previousColor = -1;
+  private int[] colorList = new int[5]; 
 
 
   public S_Spinner(){
     colorMatcher.addColorMatch(kBlueTarget);
     colorMatcher.addColorMatch(kGreenTarget);
     colorMatcher.addColorMatch(kRedTarget);
-    colorMatcher.addColorMatch(kYellowTarget);    
+    colorMatcher.addColorMatch(kYellowTarget);
+    
 
   }
 
@@ -46,6 +57,44 @@ public class S_Spinner extends SubsystemBase {
     SmartDashboard.putNumber("Green", detectedColor.green);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
     //SmartDashboard.putNumber("IR", IR);
+    motor = new CANSparkMax(Constants.spinnerMotoPort, MotorType.kBrushless);
+    motor.restoreFactoryDefaults();
+    motor.setInverted(false); // TODO: may need to change inversion
+    motor.setIdleMode(IdleMode.kBrake);
+    //encoder = new CANEncoder(motor);
+
+
+  }
+
+  public void updateColorList(){
+    Color detectedColor = colorSensor.getColor();
+    ColorMatchResult match = colorMatcher.matchClosestColor(detectedColor);
+    int currentColor;
+    if (match.color == kBlueTarget) {
+      currentColor = Constants.kBlue;
+    } else if (match.color == kRedTarget) {
+      currentColor = Constants.kBlue;
+    } else if (match.color == kGreenTarget) {
+      currentColor = Constants.kBlue;
+    } else if (match.color == kYellowTarget) {
+      currentColor = Constants.kBlue;
+    } else {
+      currentColor = Constants.kBlue;
+    }
+
+    if (currentColor != previousColor){
+      colorList[currentColor]++;
+      previousColor = currentColor;
+    }
+  }
+
+  public void resetColorListCounters(){
+    colorList = new int[5];
+    previousColor = -1;
+  }
+
+  public int[] getColorList(){
+    return colorList;
   }
 
   public void declareColor(){
@@ -71,5 +120,6 @@ public class S_Spinner extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateColorList();
   }
 }

@@ -56,6 +56,8 @@ public class KeepAngle extends PIDCommand {
 
   @Override
   public void initialize() {
+    // TODO Auto-generated method stub
+    super.initialize();
     sub.gyro.reset();
   }
 
