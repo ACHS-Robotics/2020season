@@ -70,6 +70,19 @@ public final class Constants {
   public static final int dpadLeft =  270;
   public static final int dpadRight =  90;
 
+  //arcade/weapons controller
+  public static final int manButton = 2;
+  public static final int coinButton = 3;
+  public static final int greenTopButton = 5;
+  public static final int buleTopButton = 4;
+  public static final int yellowTopButton = 6;
+  public static final int redTopButton = 7;
+  public static final int greenBottomButton = 11;
+  public static final int buleBottomButton = 9;
+  public static final int yellowBottomButton = 8;
+  public static final int redBottomButton = 7;
+  
+
   //joystick axes
   public static final int leftAxisX = 0;
   public static final int leftAxisY = 1;

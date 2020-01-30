@@ -127,11 +127,11 @@ public class RobotContainer {
     new JoystickButton(driveController, Constants.buttonX).whenPressed(c_rotationControl);
 
     //matches colors on buttons
-    new JoystickButton(weaponsController, Constants.buttonX).whenPressed(new ColorControl(sspinner, Constants.kBlue));
-    new JoystickButton(weaponsController, Constants.buttonY).whenPressed(new ColorControl(sspinner, Constants.kYellow));
-    new JoystickButton(weaponsController, Constants.buttonB).whenPressed(new ColorControl(sspinner, Constants.kRed));
-    new JoystickButton(weaponsController, Constants.buttonA).whenPressed(new ColorControl(sspinner, Constants.kGreen));
-    new JoystickButton(weaponsController, Constants.rightBumper).whenPressed(c_manualSpinner);
+    new JoystickButton(weaponsController, Constants.buleTopButton).whenPressed(new ColorControl(sspinner, Constants.kBlue));
+    new JoystickButton(weaponsController, Constants.yellowTopButton).whenPressed(new ColorControl(sspinner, Constants.kYellow));
+    new JoystickButton(weaponsController, Constants.redTopButton).whenPressed(new ColorControl(sspinner, Constants.kRed));
+    new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(new ColorControl(sspinner, Constants.kGreen));
+    //new JoystickButton(weaponsController, Constants.rightBumper).whenPressed(c_manualSpinner);
   }
 
 
