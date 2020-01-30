@@ -14,9 +14,9 @@ public final class LimeLightConstants {
     /**
      * Gets the current index of the camera mode. 
      * @param name The state. This should eitherbe DRIVER or VISION. 
-     * @return The index. 
+     * @return The index, if found. Otherwise, -1. 
      */
-    public static double getCamModeIndex(String name) { 
+    public static double getCamModeIndex(String name) {
         for (int i = 0; i < CamModeStates.length; i++) {
             if (CamModeStates[i].equals(name)) {
                 return i;

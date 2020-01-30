@@ -1,14 +1,12 @@
 package frc.robot.limelight;
 
 import edu.wpi.first.networktables.*;
-import edu.wpi.first.wpilibj.shuffleboard.*;
 
 //import frc.robot.limelight.constants.*;
 
-public class LimeLight {
-    private boolean _isConnected = false; 
-    private String _tableName; 
-    private NetworkTable _table; 
+public final class LimeLight {
+    private final String _tableName; 
+    private final NetworkTable _table; 
 
     /**
      * The LimeLight class constructor. 
@@ -22,7 +20,7 @@ public class LimeLight {
      * Determines whether the target is found or not. This is represented by the "tv" table in the Shuffleboard. 
      * @return true if the target is found, false otherwise. 
      */
-    public boolean targetIsFound() { 
+    public boolean hasTarget() { 
         NetworkTableEntry tv = this._table.getEntry("tv");
         return tv.getDouble(0) == 1.0;
     }
@@ -69,7 +67,7 @@ public class LimeLight {
      */
     public double getCurrentPipelineDouble() { 
         NetworkTableEntry pipeline = this._table.getEntry("pipeline");
-        return  pipeline.getDouble(0.0);
+        return pipeline.getDouble(0.0);
     }
 
     /**
@@ -79,6 +77,4 @@ public class LimeLight {
     public int getCurrentPipelineInt() { 
         return (int)this.getCurrentPipelineDouble();
     }
-
-    
 }
