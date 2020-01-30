@@ -24,6 +24,7 @@ import frc.robot.commands.spinner_commands.ColorControl;
 import frc.robot.commands.spinner_commands.DetectColor;
 import frc.robot.commands.spinner_commands.ManualSpinner;
 import frc.robot.commands.spinner_commands.RotationControl;
+import frc.robot.limelight.LimeLight;
 import frc.robot.commands.drive_commands.SetAngle;
 import frc.robot.commands.SetLinearActuatorLength;
 import frc.robot.commands.drive_commands.DistancePID;
@@ -54,7 +55,7 @@ public class RobotContainer {
   private final DetectColor c_commandColor = new DetectColor(sspinner);
   private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
   private final DistancePID c_distancePID = new DistancePID(sdrive);
-  private final SetAngle c_setAngle = new SetAngle(sdrive);
+  //private final SetAngle c_setAngle = new SetAngle(sdrive);
   public final RotationControl c_rotationControl = new RotationControl(sspinner);
   //public final ColorControl c_colorControl = new ColorControl(sspinner);
   public final ManualSpinner c_manualSpinner = new ManualSpinner(sspinner);
@@ -125,6 +126,7 @@ public class RobotContainer {
     new JoystickButton(driveController, Constants.rightBumper).whenPressed(new SetLinearActuatorLength(spushClimb, 11.9));
 
     new JoystickButton(driveController, Constants.buttonX).whenPressed(c_rotationControl);
+    new JoystickButton(driveController, Constants.buttonA).whenPressed(new SetAngle(sdrive, new LimeLight()));
 
     //matches colors on buttons
     new JoystickButton(weaponsController, Constants.buttonX).whenPressed(new ColorControl(sspinner, Constants.kBlue));
