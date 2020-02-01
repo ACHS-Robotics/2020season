@@ -28,6 +28,32 @@ public final class Constants {
 
   public static final double driveGearRatio = 10.71;
 
+  public static final int compressorModule = -1;
+
+  //Duotake talon ports TODO: finalize port numbers
+  public static final int intakePort = -1;
+  public static final int topConveyerPort = -1;
+  public static final int bottomConveyerPort = -1;
+
+  //Duotake solenoid TODO: finalize port numbers
+  public static final int duotakeSolenoidPort = -1;
+  public static final int duotakeSolenoidReverse = -1; 
+  public static final int duotakeSolenoidForward = -1;
+
+  //spinner solenoid
+  public static final int spinnerSolenoidPort = -1;
+  public static final int spinnerSolenoidReverse = -1; 
+  public static final int spinnerSolenoidForward = -1;
+
+  //climb solenoids
+  public static final int climbLeftSolenoidPort = -1;
+  public static final int climbLeftSolenoidReverse = -1; 
+  public static final int climbLeftSolenoidForward = -1;
+
+  public static final int climbRightSolenoidPort = -1;
+  public static final int climbRightSolenoidReverse = -1; 
+  public static final int climbRightSolenoidForward = -1;
+  
   //color indices -- in counter clockwise order
   public static final int kBlue = 0;
   public static final int kYellow = 1;
@@ -55,6 +81,7 @@ public final class Constants {
   public static final int logitechDriveCont = 0;
   public static final int logitechWeaponsCont = 1;
   public static final int gamecubeWeaponsCont = 1;
+
   //logitech button
   public static final int buttonA = 1;
   public static final int buttonB = 2;
@@ -74,14 +101,15 @@ public final class Constants {
   public static final int manButton = 2;
   public static final int coinButton = 3;
   public static final int greenTopButton = 5;
-  public static final int buleTopButton = 4;
+  public static final int blueTopButton = 4;
   public static final int yellowTopButton = 6;
   public static final int redTopButton = 7;
   public static final int greenBottomButton = 11;
-  public static final int buleBottomButton = 9;
+  public static final int blueBottomButton = 9;
   public static final int yellowBottomButton = 8;
   public static final int redBottomButton = 7;
-  
+  public static final int weaponsAxisY = 1;
+  public static final int weaponsAxisX = 0;
 
   //joystick axes
   public static final int leftAxisX = 0;
@@ -92,29 +120,6 @@ public final class Constants {
   public static final int leftTrigger = 2;
   public static final int rightTrigger = 3;
 
-  //gamecube buttons
-  public static final int gcButtonA = 2;
-  public static final int gcButtonB = 3;
-  public static final int gcButtonX = 1;
-  public static final int gcButtonY = 4;
-  public static final int gcRightBumper = 8; // z button
-  public static final int gcStartButton = 10;
-  //dpad buttons
-  public static final int gcUp = 13;
-  public static final int gcDown = 15;
-  public static final int gcLeft = 16;
-  public static final int gcRight = 14;
-  //joystick axes
-  public static final int gcLeftAxisX = 0; // control stick
-  public static final int gcLeftAxisY = 1;
-  public static final int gcRightAxisX = 5; // c stick
-  public static final int gcRightAxisY = 2;
-  //triggers analog (probs not used) -- ignore
-  public static final int gcLeftTrigger = 3; 
-  public static final int gcRightTrigger = 4;
-  //trigger digital (buttons)
-  public static final int gcLeftTriggerButton = 5;
-  public static final int gcRightTriggerButton = 6;
 
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.

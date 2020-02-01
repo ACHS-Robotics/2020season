@@ -15,6 +15,7 @@ import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -37,6 +38,8 @@ public class S_Spinner extends SubsystemBase {
   private static int previousColor = -1;
   private int[] colorList = new int[5]; 
   private static int currentColor;
+
+  public static DoubleSolenoid sol = new DoubleSolenoid(Constants.spinnerSolenoidPort, Constants.spinnerSolenoidForward, Constants.spinnerSolenoidReverse);
 
 
   public S_Spinner(){

@@ -15,14 +15,14 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class S_PushClimb extends SubsystemBase {
+public class S_Climb extends SubsystemBase {
   /**
-   * Creates a new S_PushClimb.
+   * Creates a new S_Climb.
    */
   private CANSparkMax motor;
   private AnalogPotentiometer pot;
 
-  public S_PushClimb() {
+  public S_Climb() {
     motor = new CANSparkMax(Constants.climbMotoPort, MotorType.kBrushed);
     motor.restoreFactoryDefaults();
     motor.setInverted(true);

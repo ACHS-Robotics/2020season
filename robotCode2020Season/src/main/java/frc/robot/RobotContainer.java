@@ -9,6 +9,7 @@ package frc.robot;
 
 import java.util.List;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
@@ -26,6 +27,9 @@ import frc.robot.commands.spinner_commands.ManualSpinner;
 import frc.robot.commands.spinner_commands.RotationControl;
 import frc.robot.limelight.LimeLight;
 import frc.robot.commands.drive_commands.SetAngle;
+import frc.robot.commands.duotake_commands.RunExtakeIn;
+import frc.robot.commands.duotake_commands.RunExtakeOut;
+import frc.robot.commands.duotake_commands.RunIntake;
 import frc.robot.commands.SetLinearActuatorLength;
 import frc.robot.commands.drive_commands.DistancePID;
 import frc.robot.commands.drive_commands.KeepAngle;
@@ -45,12 +49,14 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
+  Compressor comp;
 
   // SUBSYSTEMS
   public final S_Drive sdrive = new S_Drive();
   private final S_Spinner sspinner = new S_Spinner();
-  private final S_PushClimb spushClimb = new S_PushClimb();
+  private final S_Climb sclimb = new S_Climb();
   private final S_LimeLight limelight = new S_LimeLight();
+  private final S_Duotake sduotake = new S_Duotake(); 
 
   private final DetectColor c_commandColor = new DetectColor(sspinner);
   private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
@@ -60,7 +66,7 @@ public class RobotContainer {
   //public final ColorControl c_colorControl = new ColorControl(sspinner);
   public final ManualSpinner c_manualSpinner = new ManualSpinner(sspinner);
 
-  //private final SetLinearActuatorLength m_setLinearActuatorLength = new SetLinearActuatorLength(spushClimb);
+  //private final SetLinearActuatorLength m_setLinearActuatorLength = new SetLinearActuatorLength(sclimb);
 
   //controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
@@ -72,10 +78,12 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-    //spushClimb.setDefaultCommand(m_setLinearActuatorLength);
+    //sclimb.setDefaultCommand(m_setLinearActuatorLength);
  //temp  sdrive.setDefaultCommand(c_distancePID);
  //temp   sspinner.setDefaultCommand(c_commandColor);
 
+    comp = new Compressor(Constants.compressorModule);
+    comp.setClosedLoopControl(true);
   }
 
   /**
@@ -110,30 +118,41 @@ public class RobotContainer {
     },sdrive);
     */
     new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
-      spushClimb.setMotorOutput(.3);
+      sclimb.setMotorOutput(.3);
       Timer.delay(.1);
-      spushClimb.setMotorOutput(0);
-      System.out.println("pot:" + spushClimb.getPercentExtended());
-    },spushClimb);
+      sclimb.setMotorOutput(0);
+      System.out.println("pot:" + sclimb.getPercentExtended());
+    },sclimb);
     new POVButton(driveController, Constants.dpadDown).whenPressed(() -> {
-      spushClimb.setMotorOutput(-.3);
+      sclimb.setMotorOutput(-.3);
       Timer.delay(.1);
-      spushClimb.setMotorOutput(0);
-      System.out.println("pot:" + spushClimb.getPercentExtended());
-    },spushClimb);
+      sclimb.setMotorOutput(0);
+      System.out.println("pot:" + sclimb.getPercentExtended());
+    },sclimb);
 
-    new JoystickButton(driveController, Constants.leftBumper).whenPressed(new SetLinearActuatorLength(spushClimb, 0.0));
-    new JoystickButton(driveController, Constants.rightBumper).whenPressed(new SetLinearActuatorLength(spushClimb, 11.9));
+    new JoystickButton(driveController, Constants.leftBumper).whenPressed(new SetLinearActuatorLength(sclimb, 0.0));
+    new JoystickButton(driveController, Constants.rightBumper).whenPressed(new SetLinearActuatorLength(sclimb, 11.9));
 
     new JoystickButton(driveController, Constants.buttonX).whenPressed(c_rotationControl);
     new JoystickButton(driveController, Constants.buttonA).whenPressed(new SetAngle(sdrive, new LimeLight()));
 
     //matches colors on buttons
-    new JoystickButton(weaponsController, Constants.buleTopButton).whenPressed(new ColorControl(sspinner, Constants.kBlue));
+    /*new JoystickButton(weaponsController, Constants.buleTopButton).whenPressed(new ColorControl(sspinner, Constants.kBlue));
     new JoystickButton(weaponsController, Constants.yellowTopButton).whenPressed(new ColorControl(sspinner, Constants.kYellow));
     new JoystickButton(weaponsController, Constants.redTopButton).whenPressed(new ColorControl(sspinner, Constants.kRed));
     new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(new ColorControl(sspinner, Constants.kGreen));
-    //new JoystickButton(weaponsController, Constants.rightBumper).whenPressed(c_manualSpinner);
+    */
+    new JoystickButton(weaponsController, Constants.manButton).whenPressed(c_manualSpinner);
+    new JoystickButton(weaponsController, Constants.yellowBottomButton).whenPressed(new RotationControl(sspinner));
+    new JoystickButton(weaponsController, Constants.redBottomButton).whenPressed(new ColorControl(sspinner));
+
+    new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(new RunIntake(sduotake));
+    new JoystickButton(weaponsController, Constants.blueTopButton).whenPressed(new RunExtakeOut(sduotake));
+    new JoystickButton(weaponsController, Constants.yellowTopButton).whenPressed(new RunExtakeIn(sduotake));
+    new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(() -> {
+      //invert solenoid state
+      sduotake.toggleShifterPosition();
+    }, sduotake);
   }
 
 

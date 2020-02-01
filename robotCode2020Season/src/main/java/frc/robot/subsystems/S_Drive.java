@@ -246,7 +246,7 @@ public class S_Drive extends SubsystemBase {
    *                      only actual sensible values would be 0, 90, 180, or 270 (or periodic equivalents).
    * @return the raw axis magnitude with clarified sign/direction in the dimention of the given axis.
    * */
-  public double getTranslatedJoystickAxisValue(Joystick joystick, int axis, double minPosDegrees){ 
+  public static double getTranslatedJoystickAxisValue(Joystick joystick, int axis, double minPosDegrees){ 
     //these axes port tranlations only work for the F310 Logitech gamepad
     if (axis%2 == 0) {
       joystick.setXChannel(axis);

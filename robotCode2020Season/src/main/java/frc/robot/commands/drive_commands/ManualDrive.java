@@ -39,10 +39,10 @@ public class ManualDrive extends CommandBase {
   @Override
   public void execute() {
     //ensuring positive values where wanted/expected
-    double lyAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.leftAxisY, 0.0);
-    double ryAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.rightAxisY, 0.0);
-    double lxAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.leftAxisX, -90.0);
-    double rxAxis = sub.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.rightAxisX, -90.0);
+    double lyAxis = S_Drive.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.leftAxisY, 0.0);
+    double ryAxis = S_Drive.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.rightAxisY, 0.0);
+    double lxAxis = S_Drive.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.leftAxisX, -90.0);
+    double rxAxis = S_Drive.getTranslatedJoystickAxisValue(RobotContainer.driveController, Constants.rightAxisX, -90.0);
     double lTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.leftTrigger));
     double rTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.rightTrigger));
     //TODO: make a suffleboard selector for ease of switching so drivers can try the different modes easier

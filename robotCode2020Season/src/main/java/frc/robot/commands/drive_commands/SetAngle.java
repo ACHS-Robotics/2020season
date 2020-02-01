@@ -20,7 +20,7 @@ public class SetAngle extends PIDCommand {
   /**
    * Creates a new SetAngle.
    */
-  private static double turnP = 0.013, turnI = 0, turnD =0.00115;
+  private static double turnP = 0.023, turnI = 0, turnD =0.00115;
   private S_Drive sub;
   private LimeLight limelight;
 

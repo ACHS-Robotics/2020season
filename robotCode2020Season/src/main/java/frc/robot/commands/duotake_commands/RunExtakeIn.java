@@ -5,22 +5,19 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.spinner_commands;
+package frc.robot.commands.duotake_commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.S_Drive;
-import frc.robot.subsystems.S_Spinner;
+import frc.robot.subsystems.S_Duotake;
 
-public class ManualSpinner extends CommandBase {
+public class RunExtakeIn extends CommandBase {
   /**
-   * Creates a new ManualSpinner.
+   * Creates a new RunExtake.
    */
 
-  S_Spinner sub;
-  
-  public ManualSpinner(S_Spinner sub) {
+  S_Duotake sub;
+
+  public RunExtakeIn(S_Duotake sub) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sub);
     this.sub = sub;
@@ -29,23 +26,19 @@ public class ManualSpinner extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    sub.runExtakeIn();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /*double lTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.leftTrigger));
-    double rTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.rightTrigger));
-    sub.runMotor(rTrigger-lTrigger);
-    */
-    sub.runMotor(S_Drive.getTranslatedJoystickAxisValue(RobotContainer.weaponsController, Constants.weaponsAxisX, -90.0));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     if (interrupted){
-      sub.runMotor(0); //idk if necessary since all the other subsystem commands should set the motor output to whatever they need
+      sub.stopExtake();
     }
   }
 

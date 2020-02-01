@@ -9,7 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.subsystems.S_PushClimb;
+import frc.robot.subsystems.S_Climb;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -18,10 +18,10 @@ public class SetLinearActuatorLength extends PIDCommand {
   /**
    * Creates a new SetLinearActuatorLength.
    */
-  S_PushClimb sub;
+  S_Climb sub;
   double setpoint;
   
-  public SetLinearActuatorLength(S_PushClimb sub, double setpointInInches) {
+  public SetLinearActuatorLength(S_Climb sub, double setpointInInches) {
     super(
         // The controller that the command will use
         new PIDController(20, 0, 0), //may need to raise P or add I for when there is a load on the actuator
