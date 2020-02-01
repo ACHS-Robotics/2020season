@@ -10,6 +10,7 @@ package frc.robot.commands.drive_commands;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
+import frc.robot.limelight.LimeLight;
 import frc.robot.subsystems.S_Drive;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -19,10 +20,11 @@ public class SetAngle extends PIDCommand {
   /**
    * Creates a new SetAngle.
    */
-  private static double turnP = 0.013, turnI = 0, turnD =0.00115, setpoint = 90;
+  private static double turnP = 0.013, turnI = 0, turnD =0.00115;
   private S_Drive sub;
+  private LimeLight limelight;
 
-  public SetAngle(S_Drive sub) { // TODO: make continuously editable pid values
+  public SetAngle(S_Drive sub, LimeLight limelight) { // TODO: make continuously editable pid values
 
     super(
       // The controller that the command will use
@@ -35,7 +37,7 @@ public class SetAngle extends PIDCommand {
       // This should return the measurement
       () -> sub.gyro.getYaw(), //maybe Math.IEEtAngleEremainder(sub.gyro.getYaw(), 360) instead
       // This should return the setpoint (can also be a constant)
-      setpoint,
+      limelight.getHorizontalOffset(),
       //() -> SmartDashboard.getNumber("turnSetpoint", 0), //for tuning
       // This uses the output
       output -> {
@@ -51,6 +53,7 @@ public class SetAngle extends PIDCommand {
     System.out.println("turnSetpoint: " + SmartDashboard.getNumber("turnSetpoint", 0));
     addRequirements(sub);
     this.sub = sub;
+    this.limelight = limelight;
     // Configure additional PID options by calling `getController` here.
     getController().enableContinuousInput(-180, 180); // maybe change depending on the navx
     getController().setTolerance(0, 0); //copied constants (5,10) (may need adjusting and put into constants.java)
@@ -69,6 +72,7 @@ public class SetAngle extends PIDCommand {
     super.initialize();
     sub.diffDrive.setDeadband(0);
     sub.gyro.reset();
+    getController().setSetpoint(limelight.getHorizontalOffset());
   }
 
   @Override
