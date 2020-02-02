@@ -17,6 +17,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -128,6 +129,15 @@ public class S_Spinner extends SubsystemBase {
 
   public void runMotor(double percent){
     motor.set(percent);
+  }
+
+  public void togglePneumatics(){ // TODO: may want to change to having a set pnumatics state function
+    if (sol.get() == Value.kForward){
+      sol.set(Value.kReverse);
+    }
+    else {
+      sol.set(Value.kForward);
+    }
   }
 
   @Override

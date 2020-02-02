@@ -151,7 +151,7 @@ public class RobotContainer {
     new JoystickButton(weaponsController, Constants.yellowTopButton).whenPressed(new RunExtakeIn(sduotake));
     new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(() -> {
       //invert solenoid state
-      sduotake.toggleShifterPosition();
+      sduotake.togglePneumatics();
     }, sduotake);
   }
 

@@ -56,7 +56,7 @@ public class S_Duotake extends SubsystemBase {
   }
 
   //swaps the state of the solenoid for different extake positions
-  public void toggleShifterPosition(){
+  public void togglePneumatics(){
     if (sol.get() == Value.kForward){
       sol.set(Value.kReverse);
     }
