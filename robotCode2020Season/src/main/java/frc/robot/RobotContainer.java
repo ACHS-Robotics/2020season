@@ -55,7 +55,6 @@ public class RobotContainer {
   public final S_Drive sdrive = new S_Drive();
   private final S_Spinner sspinner = new S_Spinner();
   private final S_Climb sclimb = new S_Climb();
-  private final S_LimeLight limelight = new S_LimeLight();
   private final S_Duotake sduotake = new S_Duotake(); 
 
   private final DetectColor c_commandColor = new DetectColor(sspinner);
