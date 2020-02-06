@@ -10,7 +10,6 @@ package frc.robot.commands.spinner_commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.S_Drive;
 import frc.robot.subsystems.S_Spinner;
 
 public class ManualSpinner extends CommandBase {
@@ -34,11 +33,12 @@ public class ManualSpinner extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /*double lTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.leftTrigger));
+    double lTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.leftTrigger));
     double rTrigger = Math.abs(RobotContainer.driveController.getRawAxis(Constants.rightTrigger));
     sub.runMotor(rTrigger-lTrigger);
-    */
-    sub.runMotor(S_Drive.getTranslatedJoystickAxisValue(RobotContainer.weaponsController, Constants.weaponsAxisX, -90.0));
+    
+    //sub.runMotor(1);
+    //System.out.println("plz");
   }
 
   // Called once the command ends or is interrupted.

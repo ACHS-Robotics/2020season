@@ -17,6 +17,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -40,10 +41,15 @@ public class S_Spinner extends SubsystemBase {
   private int[] colorList = new int[5]; 
   private static int currentColor;
 
-  public static DoubleSolenoid sol = new DoubleSolenoid(Constants.spinnerSolenoidPort, Constants.spinnerSolenoidForward, Constants.spinnerSolenoidReverse);
+  //public static DoubleSolenoid sol = new DoubleSolenoid(Constants.spinnerSolenoidPort, Constants.spinnerSolenoidForward, Constants.spinnerSolenoidReverse);
 
 
   public S_Spinner(){
+    motor = new CANSparkMax(Constants.spinnerMotoPort, MotorType.kBrushless);
+    motor.restoreFactoryDefaults();
+    motor.setIdleMode(IdleMode.kBrake);
+    motor.setInverted(false);
+
     colorMatcher.addColorMatch(kBlueTarget);
     colorMatcher.addColorMatch(kGreenTarget);
     colorMatcher.addColorMatch(kRedTarget);
@@ -131,6 +137,36 @@ public class S_Spinner extends SubsystemBase {
     motor.set(percent);
   }
 
+  public double getTranslatedJoystickAxisValue(Joystick joystick, int axis, double minPosDegrees){ 
+    //these axes port tranlations only work for the F310 Logitech gamepad
+    if (axis%2 == 0) {
+      joystick.setXChannel(axis);
+      joystick.setYChannel(axis+1);
+    }
+    else {
+      joystick.setXChannel(axis-1);
+      joystick.setYChannel(axis);
+    }
+    double axisAngle = Math.IEEEremainder(-joystick.getDirectionDegrees()+90,360); //given angle starting from positive y-axis positive in clockwise direction
+    SmartDashboard.putNumber("axisAngle", axisAngle);
+    double maxPosDegrees = minPosDegrees+180.0;
+    minPosDegrees = Math.IEEEremainder(minPosDegrees, 360);
+    maxPosDegrees = Math.IEEEremainder(maxPosDegrees, 360);
+    double output;
+    //there's probs a better way to state and format this if statement
+    if ((minPosDegrees < maxPosDegrees && (axisAngle < maxPosDegrees && axisAngle > minPosDegrees))
+        || (minPosDegrees > maxPosDegrees && ((axisAngle > maxPosDegrees && axisAngle > minPosDegrees) 
+                                              || (axisAngle < maxPosDegrees && axisAngle < minPosDegrees)))) {
+      output = Math.abs(joystick.getRawAxis(axis));
+    }
+    else {
+      output = -Math.abs(joystick.getRawAxis(axis));
+    }
+    
+    return output;
+  }
+
+/*
   public void togglePneumatics(){ // TODO: may want to change to having a set pnumatics state function
     if (sol.get() == Value.kForward){
       sol.set(Value.kReverse);
@@ -139,7 +175,7 @@ public class S_Spinner extends SubsystemBase {
       sol.set(Value.kForward);
     }
   }
-
+*/
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

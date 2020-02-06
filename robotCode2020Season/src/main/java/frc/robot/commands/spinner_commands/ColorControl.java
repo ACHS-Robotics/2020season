@@ -35,7 +35,7 @@ public class ColorControl extends PIDCommand {
             return 0;
           }
           else {
-            return -sub.getDistFromColor(setpointColor);
+            return sub.getDistFromColor(setpointColor);
           }
         }, // negation is used to get correct output sign (could also make this 0 and have a positive lambda function in the third argument)
         // This should return the setpoint (can also be a constant)
@@ -43,6 +43,8 @@ public class ColorControl extends PIDCommand {
         // This uses the output
         output -> {
           // Use the output here
+          sub.updateSBColors();
+          sub.declareColor();
           sub.runMotor(output);
         });
     // Use addRequirements() here to declare subsystem dependencies.

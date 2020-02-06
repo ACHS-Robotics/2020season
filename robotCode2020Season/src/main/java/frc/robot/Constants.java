@@ -23,8 +23,8 @@ public final class Constants {
   public static final int NEOrb = 2;
 
   public static final int NEO1 = 4; // seperate testing
-  public static final int climbMotoPortLA = 12; //LA = LinearActuator
-  public static final int spinnerMotoPort = -1; //TODO: finalize port number
+  public static final int climbMotoPortLA = -1; //LA = LinearActuator
+  public static final int spinnerMotoPort = 12; //TODO: finalize port number
   public static final int winchLeftFalcon = -1; //TODO: finalize port number
   public static final int winchRightFalcon = -1; //TODO: finalize port number
 
