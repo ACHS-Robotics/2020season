@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -35,6 +37,14 @@ public class S_Climb extends SubsystemBase {
     motor.setInverted(true);
     motor.setIdleMode(IdleMode.kBrake);
     pot = new AnalogPotentiometer(3);
+    
+    leftFalcon.set(ControlMode.PercentOutput, 0);
+    rightFalcon.set(ControlMode.PercentOutput, 0);
+    leftFalcon.configFactoryDefault();
+    rightFalcon.configFactoryDefault();
+    leftFalcon.setNeutralMode(NeutralMode.Brake);
+    rightFalcon.setNeutralMode(NeutralMode.Brake);
+
   }
 
   public double getPercentExtended(){ // returns range ~0 to ~1
@@ -44,7 +54,10 @@ public class S_Climb extends SubsystemBase {
   public void setMotorOutput(double percent){
     motor.set(percent);
   }
-
+  public void setFalcons(double percent){
+    leftFalcon.set(ControlMode.PercentOutput, percent);
+    rightFalcon.set(ControlMode.PercentOutput, percent);
+  }
   public void togglePneumatics(){
     if (rightSol.get() == Value.kForward && leftSol.get() == Value.kForward){
       rightSol.set(Value.kReverse);

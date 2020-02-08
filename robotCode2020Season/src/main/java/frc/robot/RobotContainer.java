@@ -30,6 +30,7 @@ import frc.robot.commands.drive_commands.SetAngle;
 import frc.robot.commands.duotake_commands.RunExtakeIn;
 import frc.robot.commands.duotake_commands.RunExtakeOut;
 import frc.robot.commands.duotake_commands.RunIntake;
+import frc.robot.commands.SetClimbMotors;
 import frc.robot.commands.SetLinearActuatorLength;
 import frc.robot.commands.drive_commands.DistancePID;
 import frc.robot.commands.drive_commands.KeepAngle;
@@ -152,6 +153,8 @@ public class RobotContainer {
       //invert solenoid state
       sduotake.togglePneumatics();
     }, sduotake);
+  // TODO: remap button
+    new JoystickButton(weaponsController, Constants.greenTopButton).whileHeld(new SetClimbMotors(sclimb));
   }
 
 
