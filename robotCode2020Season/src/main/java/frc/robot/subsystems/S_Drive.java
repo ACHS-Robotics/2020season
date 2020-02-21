@@ -129,7 +129,7 @@ public class S_Drive extends SubsystemBase {
     resetEncPosition();
     kinematics = new DifferentialDriveKinematics(Constants.trackWidth);
     pose = new Pose2d(); // i think this should be the same as that which is used in DifferentialDriveOdometry?
-    odometry = new DifferentialDriveOdometry(getHeading()); // may want other constructor for enabling a starting position
+    odometry = new DifferentialDriveOdometry(getHeading(), pose); // may want other constructor for enabling a starting position
     
 
 
@@ -322,5 +322,6 @@ public class S_Drive extends SubsystemBase {
       encoderLeft.getPosition()-tareEncPositionL,
       encoderRight.getPosition()-tareEncPositionR
     );
+    //System.out.println("left encoder position in meters" + encoderLeft.getPosition());
   }
 }

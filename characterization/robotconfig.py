@@ -1,14 +1,12 @@
 {
+    # Warning: This project type is for BRUSHLESS motors ONLY!
     # Ports for the left-side motors
-    "leftMotorPorts": [14, 15],
+    "leftMotorPorts": [2, 1],
     # Ports for the right-side motors
-    "rightMotorPorts": [1, 2],
+    "rightMotorPorts": [15, 16],
     # Note: Inversions of the slaves (i.e. any motor *after* the first on
     # each side of the drive) are *with respect to their master*.  This is
-    # different from the other poject types
-    # TrevNote: also in the update as of 1/21/20 you must type inversions as if
-    # you allowed differentialDrive to automatically invert them (for us both
-    # masters should have the same inversion.
+    # different from the other poject types!
     # Inversions for the left-side motors
     "leftMotorsInverted": [False, False],
     # Inversions for the right side motors
@@ -17,7 +15,7 @@
     # a fraction [motor turns]/[wheel turns]
     "gearing": 10.71,
     # Wheel diameter (in units of your choice - will dictate units of analysis)
-    "wheelDiameter": 0.1524, #this is in meters
+    "wheelDiameter": 0.1524,
     # Your gyro type (one of "NavX", "Pigeon", "ADXRS450", "AnalogGyro", or "None")
     "gyroType": "NavX",
     # Whatever you put into the constructor of your gyro
@@ -30,5 +28,4 @@
     # "" (NavX using default SPI, ADXRS450 using onboard CS0, or no gyro)
     "gyroPort": "SerialPort.Port.kUSB",
 }
-
 

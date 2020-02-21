@@ -21,20 +21,11 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import frc.robot.commands.spinner_commands.ColorControl;
-import frc.robot.commands.spinner_commands.DetectColor;
-import frc.robot.commands.spinner_commands.ManualSpinner;
-import frc.robot.commands.spinner_commands.RotationControl;
 import frc.robot.limelight.LimeLight;
-import frc.robot.commands.drive_commands.SetAngle;
-import frc.robot.commands.duotake_commands.RunExtakeIn;
-import frc.robot.commands.duotake_commands.RunExtakeOut;
-import frc.robot.commands.duotake_commands.RunIntake;
-import frc.robot.commands.SetClimbMotors;
-import frc.robot.commands.SetLinearActuatorLength;
 import frc.robot.commands.drive_commands.DistancePID;
 import frc.robot.commands.drive_commands.KeepAngle;
 import frc.robot.commands.drive_commands.ManualDrive;
+import frc.robot.commands.drive_commands.SetAnglePID;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -50,27 +41,21 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  Compressor comp;
+  //Compressor comp;
 
   // SUBSYSTEMS
   public final S_Drive sdrive = new S_Drive();
-  private final S_Spinner sspinner = new S_Spinner();
-  private final S_Climb sclimb = new S_Climb();
-  private final S_Duotake sduotake = new S_Duotake(); 
+  //public final S_Climb sclimb = new S_Climb();
 
-  private final DetectColor c_commandColor = new DetectColor(sspinner);
   private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
   private final DistancePID c_distancePID = new DistancePID(sdrive);
-  //private final SetAngle c_setAngle = new SetAngle(sdrive);
-  public final RotationControl c_rotationControl = new RotationControl(sspinner);
-  //public final ColorControl c_colorControl = new ColorControl(sspinner);
-  public final ManualSpinner c_manualSpinner = new ManualSpinner(sspinner);
+
 
   //private final SetLinearActuatorLength m_setLinearActuatorLength = new SetLinearActuatorLength(sclimb);
 
   //controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
-  public static Joystick weaponsController = new Joystick(Constants.logitechWeaponsCont);
+  //public static Joystick weaponsController = new Joystick(Constants.logitechWeaponsCont);
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -81,9 +66,9 @@ public class RobotContainer {
     //sclimb.setDefaultCommand(m_setLinearActuatorLength);
  //temp  sdrive.setDefaultCommand(c_distancePID);
  //temp   sspinner.setDefaultCommand(c_commandColor);
-
-    comp = new Compressor(Constants.compressorModule);
-    comp.setClosedLoopControl(true);
+    sdrive.setDefaultCommand(c_manualDrive);
+    //comp = new Compressor(Constants.compressorModule);
+    //comp.setClosedLoopControl(true);
   }
 
   /**
@@ -93,7 +78,16 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    /*new JoystickButton(driveController, Constants.buttonA).whileHeld(new SetAngle(sdrive));
+    //new JoystickButton(driveController, Constants.buttonA).whileHeld(new SetAnglePID(sdrive));
+    //new JoystickButton(driveController, Constants.rightBumper).whileHeld(new KeepAngle(sdrive));
+    /*new JoystickButton(driveController, Constants.buttonX).whenPressed(()->{
+      sclimb.setFalcons(1.0);
+    }, sclimb);
+    new JoystickButton(driveController, Constants.buttonB).whenPressed(()->{
+      sclimb.setFalcons(0.0);
+    }, sclimb);
+    */
+    /*
     //new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new DistancePID(sdrive)); //TODO: learn how toggle works (doesn't seem to work how i think it does)
     new JoystickButton(driveController, Constants.rightBumper).whileHeld(new KeepAngle(sdrive));
     new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
@@ -117,6 +111,7 @@ public class RobotContainer {
       sdrive.runMotor(0,0);
     },sdrive);
     */
+    /*
     new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
       sclimb.setMotorOutput(.3);
       Timer.delay(.1);
@@ -142,19 +137,8 @@ public class RobotContainer {
     new JoystickButton(weaponsController, Constants.redTopButton).whenPressed(new ColorControl(sspinner, Constants.kRed));
     new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(new ColorControl(sspinner, Constants.kGreen));
     */
-    new JoystickButton(weaponsController, Constants.manButton).whenPressed(c_manualSpinner);
-    new JoystickButton(weaponsController, Constants.yellowBottomButton).whenPressed(new RotationControl(sspinner));
-    new JoystickButton(weaponsController, Constants.redBottomButton).whenPressed(new ColorControl(sspinner));
 
-    new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(new RunIntake(sduotake));
-    new JoystickButton(weaponsController, Constants.blueTopButton).whenPressed(new RunExtakeOut(sduotake));
-    new JoystickButton(weaponsController, Constants.yellowTopButton).whenPressed(new RunExtakeIn(sduotake));
-    new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(() -> {
-      //invert solenoid state
-      sduotake.togglePneumatics();
-    }, sduotake);
-  // TODO: remap button
-    new JoystickButton(weaponsController, Constants.greenTopButton).whileHeld(new SetClimbMotors(sclimb));
+
   }
 
 

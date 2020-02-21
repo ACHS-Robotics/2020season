@@ -17,15 +17,15 @@ package frc.robot;
  */
 public final class Constants {
     //neo sparkmaxes -- the ids on the side of the pdp with lower numbers has their can id set to 1+pdpNumber
-  public static final int NEOlf = 14;
-  public static final int NEOlb = 15;
-  public static final int NEOrf = 1;
-  public static final int NEOrb = 2;
+  public static final int NEOlf = 2;
+  public static final int NEOlb = 1;
+  public static final int NEOrf = 15;
+  public static final int NEOrb = 16;
 
   public static final int NEO1 = 4; // seperate testing
   public static final int climbMotoPortLA = 12; //LA = LinearActuator
   public static final int spinnerMotoPort = -1; //TODO: finalize port number
-  public static final int winchLeftFalcon = -1; //TODO: finalize port number
+  public static final int winchLeftFalcon = 12; //TODO: finalize port number
   public static final int winchRightFalcon = -1; //TODO: finalize port number
 
   public static final double driveGearRatio = 10.71;
@@ -68,13 +68,13 @@ public final class Constants {
   public static final double meters2NeoRevs = 1/neoRevs2meters;
 
   //trajectory related value (in SI units) TODO: POPULATE VALUES
-  public static final double trackWidth = 0;
-  public static final double kS = 0;
-  public static final double kV = 0;
-  public static final double kA = 0;
-  public static final double kPTraj = 0;
-  public static final double maxTrajVelocity = 0;
-  public static final double maxTrajAcceleration = 0;
+  public static final double trackWidth = 0.683;
+  public static final double kS = 0.139;
+  public static final double kV = 2.82;
+  public static final double kA = 0.323;
+  public static final double kPTraj = 1.21; // may want to raise this one a bit (note: currently the value from characterization divided by 10)
+  public static final double maxTrajVelocity = 2;
+  public static final double maxTrajAcceleration = 1; // if not using constraint we need to be careful with this one
 
   //old 
 
