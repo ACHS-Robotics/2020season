@@ -16,20 +16,20 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    //neo sparkmaxes -- the ids on the side of the pdp with lower numbers has their can id set to 1+pdpNumber
+  //neo sparkmaxes -- the ids on the side of the pdp with lower numbers has their can id set to 1+pdpNumber
+  //TODO: set for final robot
   public static final int NEOlf = 14;
   public static final int NEOlb = 15;
   public static final int NEOrf = 1;
   public static final int NEOrb = 2;
 
-  public static final int NEO1 = 4; // seperate testing
-  public static final int climbMotoPortLA = 12; //LA = LinearActuator
   public static final int spinnerMotoPort = -1; //TODO: finalize port number
   public static final int winchLeftFalcon = -1; //TODO: finalize port number
   public static final int winchRightFalcon = -1; //TODO: finalize port number
 
   public static final double driveGearRatio = 10.71;
 
+  //TODO: finalize module number
   public static final int compressorModule = -1;
 
   //Duotake talon ports TODO: finalize port numbers
@@ -42,12 +42,7 @@ public final class Constants {
   public static final int duotakeSolenoidReverse = -1; 
   public static final int duotakeSolenoidForward = -1;
 
-  //spinner solenoid
-  public static final int spinnerSolenoidPort = -1;
-  public static final int spinnerSolenoidReverse = -1; 
-  public static final int spinnerSolenoidForward = -1;
-
-  //climb solenoids
+  //climb solenoids TODO: finalize port numbers
   public static final int climbLeftSolenoidPort = -1;
   public static final int climbLeftSolenoidReverse = -1; 
   public static final int climbLeftSolenoidForward = -1;
@@ -82,7 +77,6 @@ public final class Constants {
   //controllers
   public static final int logitechDriveCont = 0;
   public static final int logitechWeaponsCont = 1;
-  public static final int gamecubeWeaponsCont = 1;
 
   //logitech button
   public static final int buttonA = 1;
@@ -93,7 +87,6 @@ public final class Constants {
   public static final int rightBumper = 6;
   public static final int backButton = 7;
   public static final int startButton = 8;
-  public static final int dpad =  RobotContainer.driveController.getPOV(0);
   public static final int dpadUp =  0;
   public static final int dpadDown =  180;
   public static final int dpadLeft =  270;

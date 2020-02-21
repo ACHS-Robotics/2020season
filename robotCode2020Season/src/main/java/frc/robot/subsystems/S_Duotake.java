@@ -20,15 +20,18 @@ public class S_Duotake extends SubsystemBase {
    * Creates a new Duotake.
    */
 
-  TalonSRX intake = new TalonSRX(Constants.intakePort);
-  TalonSRX topConveyer = new TalonSRX(Constants.topConveyerPort);
-  TalonSRX bottomConveyer = new TalonSRX(Constants.bottomConveyerPort);
-  public static DoubleSolenoid sol = new DoubleSolenoid(Constants.duotakeSolenoidPort, Constants.duotakeSolenoidForward, Constants.duotakeSolenoidReverse);
+  TalonSRX intake;
+  TalonSRX topConveyer;
+  TalonSRX bottomConveyer;
+  DoubleSolenoid sol;
 
 
 
   public S_Duotake() {
-    
+    intake = new TalonSRX(Constants.intakePort);
+    topConveyer = new TalonSRX(Constants.topConveyerPort);
+    bottomConveyer = new TalonSRX(Constants.bottomConveyerPort);
+    sol = new DoubleSolenoid(Constants.duotakeSolenoidPort, Constants.duotakeSolenoidForward, Constants.duotakeSolenoidReverse);
   }
 
   //TODO: for all motor running methodes may need to change inversions/negate set values

@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Units;
 import frc.robot.Constants;
 
 public class S_Drive extends SubsystemBase {
@@ -52,12 +51,9 @@ public class S_Drive extends SubsystemBase {
 
   private CANEncoder encoderRight;
   private CANEncoder encoderLeft;
-  private CANPIDController pidcontrollerR;
-  private CANPIDController pidcontrollerL;
   double tareEncPositionR = 0;
   double tareEncPositionL = 0;
   public double kTurnP = .1, kTurnI = 0, kTurnD = 0; // probs a better way to do this than make it public
-  double kP = 0.075, kI = 0, kIzone = 0, kD = 1.5,kFF = 0, kMinOutput = -1, kMaxOutput = 1;
 
   public S_Drive(){
     
@@ -89,36 +85,6 @@ public class S_Drive extends SubsystemBase {
     encoderLeft.setPositionConversionFactor(Constants.neoRevs2meters);
     encoderLeft.setVelocityConversionFactor(Constants.neoRevs2meters/60);
 
-    pidcontrollerR = rfmoto.getPIDController();
-    pidcontrollerR.setFeedbackDevice(encoderRight);
-
-    pidcontrollerL = lfmoto.getPIDController();
-    pidcontrollerL.setFeedbackDevice(encoderLeft);
-
-    SmartDashboard.putNumber("P", kP);
-    SmartDashboard.putNumber("I", kI);
-    SmartDashboard.putNumber("Izone", kIzone);
-    SmartDashboard.putNumber("D", kD);
-    SmartDashboard.putNumber("FF", kFF);
-    SmartDashboard.putNumber("MinOutput", kMinOutput);
-    SmartDashboard.putNumber("MaxOutput", kMaxOutput);
-    SmartDashboard.putNumber("Setpoint", 0);
-    SmartDashboard.putNumber("turnP", kTurnP);
-    SmartDashboard.putNumber("turnI", kTurnI);
-    SmartDashboard.putNumber("turnD", kTurnD);
-    SmartDashboard.putNumber("turnSetpoint", 0);
-
-    pidcontrollerR.setP(kP);
-    pidcontrollerL.setP(kP);
-    pidcontrollerR.setI(kI);
-    pidcontrollerL.setI(kI);
-    pidcontrollerR.setIZone(kIzone);
-    pidcontrollerL.setIZone(kIzone);
-    pidcontrollerR.setD(kD);
-    pidcontrollerL.setD(kD);
-    pidcontrollerR.setOutputRange(kMinOutput, kMaxOutput);
-    pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
-
     diffDrive = new DifferentialDrive(lfmoto, rfmoto);
     diffDrive.setSafetyEnabled(false);
     diffDrive.setRightSideInverted(false); //all inversion is done beforehand
@@ -132,55 +98,6 @@ public class S_Drive extends SubsystemBase {
     odometry = new DifferentialDriveOdometry(getHeading()); // may want other constructor for enabling a starting position
     
 
-
-  }
-  
-  public void setPID(){
-    double p = SmartDashboard.getNumber("P", 0);
-    double i = SmartDashboard.getNumber("I", 0);
-    double izone = SmartDashboard.getNumber("Izone", 0);
-    double d = SmartDashboard.getNumber("D", 0);
-    double ff = SmartDashboard.getNumber("FF", 0);
-    double minOutput = SmartDashboard.getNumber("MinOutput", 0);
-    double maxOutput = SmartDashboard.getNumber("MaxOutput", 0);
-    double setpoint = SmartDashboard.getNumber("Setpoint", 0);
-
-
-    if (p != kP) {
-      kP = p;
-      pidcontrollerR.setP(kP);
-      pidcontrollerL.setP(kP);
-    }
-    if (i != kI) {
-      kI = i;
-      pidcontrollerR.setI(kI);
-      pidcontrollerL.setI(kI);
-    }
-    if (i != kIzone){
-      kIzone = izone;
-      pidcontrollerR.setIZone(kIzone);
-      pidcontrollerL.setIZone(kIzone);
-    }
-    if (d != kD) {
-      kD = d;
-      pidcontrollerR.setD(kD);
-      pidcontrollerL.setD(kD);
-    }
-    if (ff != kFF) {
-      kFF = ff;
-      pidcontrollerR.setFF(kFF);
-      pidcontrollerL.setFF(kFF);
-    }
-    if (minOutput != kMinOutput || maxOutput != kMaxOutput) {
-      kMinOutput = minOutput;
-      kMaxOutput = maxOutput;
-      pidcontrollerR.setOutputRange(kMinOutput, kMaxOutput);
-      pidcontrollerL.setOutputRange(kMinOutput, kMaxOutput);
-    }
-
-    // setpoints should be in meters
-    pidcontrollerR.setReference(setpoint + tareEncPositionR, ControlType.kPosition);
-    pidcontrollerL.setReference(setpoint + tareEncPositionL, ControlType.kPosition); 
 
   }
 
@@ -230,9 +147,7 @@ public class S_Drive extends SubsystemBase {
 
   }
 
-  public void put_SB_Dist_PID_Info(){
-    //TODO: make pid graphs
-  }
+  //TODO: make fancy shuffleboard stuff
 
     /**
    * Translates the sign of the joystick value to fit a 180 degree range of allowed positive degrees.
