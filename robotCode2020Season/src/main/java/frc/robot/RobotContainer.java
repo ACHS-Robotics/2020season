@@ -7,9 +7,13 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
@@ -21,13 +25,13 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import frc.robot.limelight.LimeLight;
 import frc.robot.commands.drive_commands.SetAngle;
 import frc.robot.commands.duotake_commands.RunExtakeIn;
 import frc.robot.commands.duotake_commands.RunExtakeOut;
 import frc.robot.commands.duotake_commands.RunIntake;
 import frc.robot.commands.SetClimbMotors;
-import frc.robot.commands.drive_commands.DistancePID;
 import frc.robot.commands.drive_commands.ManualDrive;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -53,7 +57,7 @@ public class RobotContainer {
 
 
   private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
-  private final DistancePID c_distancePID = new DistancePID(sdrive); //TODO: if we need distance pid just change to having a trajectory?
+  //TODO: if we need distance pid just change to having a trajectory?
   //private final SetAngle c_setAngle = new SetAngle(sdrive);
 
   //controllers
@@ -126,7 +130,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
+    RamseteCommand command;
+
+    /*TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
     config.setKinematics(sdrive.getKinematics());
     // An example trajectory to follow.  All units in meters.
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
@@ -143,7 +149,7 @@ public class RobotContainer {
       config
     );
 
-    RamseteCommand command = new RamseteCommand(
+    command = new RamseteCommand(
       trajectory,
       sdrive::getPose,
       new RamseteController(2.0, 0.7),
@@ -155,6 +161,33 @@ public class RobotContainer {
       sdrive::setOutput,
       sdrive
     );
+
+*/
+
+    //pathweaver method
+    String trajectoryJSON = "paths/path1.wpilib.json";
+    try {
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+      Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+      command = new RamseteCommand(
+        trajectory,
+        sdrive::getPose,
+        new RamseteController(2.0, 0.7),
+        sdrive.getFeedforward(),
+        sdrive.getKinematics(), 
+        sdrive::getSpeeds,
+        sdrive.getLeftTrajPIDController(),
+        sdrive.getRightTrajPIDController(),
+        sdrive::setOutput,
+        sdrive
+      );
+  
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+      command = null;
+    }
+
+
 
     return command;
   }
