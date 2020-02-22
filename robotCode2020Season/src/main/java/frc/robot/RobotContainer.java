@@ -7,9 +7,15 @@
 
 package frc.robot;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.ctre.phoenix.motion.TrajectoryPoint;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,6 +28,7 @@ import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.spline.Spline.ControlVector;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -51,78 +58,80 @@ public class RobotContainer {
   Compressor comp;
 
   // SUBSYSTEMS
-  public final S_Drive sdrive = new S_Drive();
+  public final static S_Drive sdrive = new S_Drive();
   private final S_Climb sclimb = new S_Climb();
-  private final S_Duotake sduotake = new S_Duotake(); 
-
+  private final S_Duotake sduotake = new S_Duotake();
 
   private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
-  //TODO: if we need distance pid just change to having a trajectory?
-  //private final SetAngle c_setAngle = new SetAngle(sdrive);
+  // TODO: if we need distance pid just change to having a trajectory?
+  // private final SetAngle c_setAngle = new SetAngle(sdrive);
 
-  //controllers
+  // controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
   public static Joystick weaponsController = new Joystick(Constants.logitechWeaponsCont);
 
   /**
-   * The container for the robot.  Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
     sdrive.setDefaultCommand(c_manualDrive);
 
-    /* TODO: add compressor 
-    comp = new Compressor(Constants.compressorModule);
-    comp.setClosedLoopControl(true);
-    */
+    /*
+     * TODO: add compressor comp = new Compressor(Constants.compressorModule);
+     * comp.setClosedLoopControl(true);
+     */
   }
 
   /**
-   * Use this method to define your button->command mappings.  Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-   * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by instantiating a {@link GenericHID} or one of its subclasses
+   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
+   * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    //new JoystickButton(driveController, Constants.buttonA).whileHeld(new SetAngle(sdrive));
-    //new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new DistancePID(sdrive)); //TODO: learn how toggle works (doesn't seem to work how i think it does)
-    //new JoystickButton(driveController, Constants.rightBumper).whileHeld(new KeepAngle(sdrive)); TODO: make P bigger to help out with this
+    // new JoystickButton(driveController, Constants.buttonA).whileHeld(new
+    // SetAngle(sdrive));
+    // new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new
+    // DistancePID(sdrive)); //TODO: learn how toggle works (doesn't seem to work
+    // how i think it does)
+    // new JoystickButton(driveController, Constants.rightBumper).whileHeld(new
+    // KeepAngle(sdrive)); TODO: make P bigger to help out with this
     new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
-      sdrive.runMotor(.5,.5);
+      sdrive.runMotor(.5, .5);
       Timer.delay(.1);
-      sdrive.runMotor(0,0);
-    },sdrive);
+      sdrive.runMotor(0, 0);
+    }, sdrive);
     new POVButton(driveController, Constants.dpadDown).whenPressed(() -> {
-      sdrive.runMotor(-.5,-.5);
+      sdrive.runMotor(-.5, -.5);
       Timer.delay(.1);
-      sdrive.runMotor(0,0);
-    },sdrive);
+      sdrive.runMotor(0, 0);
+    }, sdrive);
     new POVButton(driveController, Constants.dpadLeft).whenPressed(() -> {
-      sdrive.runMotor(-.5,.5);
+      sdrive.runMotor(-.5, .5);
       Timer.delay(.05);
-      sdrive.runMotor(0,0);
-    },sdrive);
+      sdrive.runMotor(0, 0);
+    }, sdrive);
     new POVButton(driveController, Constants.dpadRight).whenPressed(() -> {
-      sdrive.runMotor(.5,-.5);
+      sdrive.runMotor(.5, -.5);
       Timer.delay(.05);
-      sdrive.runMotor(0,0);
-    },sdrive);
+      sdrive.runMotor(0, 0);
+    }, sdrive);
 
-    //new JoystickButton(driveController, Constants.buttonA).whenPressed(new SetAngle(sdrive, new LimeLight()));
+    // new JoystickButton(driveController, Constants.buttonA).whenPressed(new
+    // SetAngle(sdrive, new LimeLight()));
 
     new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(new RunIntake(sduotake));
     new JoystickButton(weaponsController, Constants.blueTopButton).whenPressed(new RunExtakeOut(sduotake));
     new JoystickButton(weaponsController, Constants.yellowTopButton).whenPressed(new RunExtakeIn(sduotake));
     new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(() -> {
-      //invert solenoid state
+      // invert solenoid state
       sduotake.togglePneumatics();
     }, sduotake);
-  // TODO: remap button
+    // TODO: remap button
     new JoystickButton(weaponsController, Constants.greenTopButton).whileHeld(new SetClimbMotors(sclimb));
   }
-
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -132,24 +141,62 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     RamseteCommand command;
 
-    /*TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
+    TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
     config.setKinematics(sdrive.getKinematics());
-    // An example trajectory to follow.  All units in meters.
+    // An example trajectory to follow. All units in meters.
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-      // Start at the origin facing the +X direction
-      new Pose2d(0, 0, new Rotation2d(0)),
-      // Pass through these two interior waypoints, making an 's' curve path
-      List.of(
-          new Translation2d(1, 1),
-          new Translation2d(2, -1)
-      ),
-      // End 3 meters straight ahead of where we started, facing forward
-      new Pose2d(3, 0, new Rotation2d(0)),
-      // Pass config
-      config
-    );
+        // Start at the origin facing the +X direction
+        new Pose2d(0, 0, new Rotation2d(0)),
+        // Pass through these two interior waypoints, making an 's' curve path
+        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+        // End 3 meters straight ahead of where we started, facing forward
+        new Pose2d(3, 0, new Rotation2d(0)),
+        // Pass config
+        config);
 
-    command = new RamseteCommand(
+    command = new RamseteCommand(trajectory, sdrive::getPose, new RamseteController(2.0, 0.7), sdrive.getFeedforward(),
+        sdrive.getKinematics(), sdrive::getSpeeds, sdrive.getLeftTrajPIDController(),
+        sdrive.getRightTrajPIDController(), sdrive::setOutput, sdrive);
+
+    return command;
+  }
+
+
+  //
+
+  public static RamseteCommand generateRamseteCommand(String pathName, boolean reverse) throws IOException {
+    //List<ControlVector> controlVectors = new ArrayList<>();
+    List<Pose2d> waypoints = new ArrayList<>();
+
+    String pathJSON = "paths/"+ pathName +".path";
+    Path pathsPath = Filesystem.getDeployDirectory().toPath().resolve(pathJSON);
+    String contents = new String(Files.readAllBytes(pathsPath));
+    String[] lines = contents.split("\n");
+
+    for(int i = 1; i < lines.length; i++){ // first line is just decription
+      String[] lineProperties = lines[i].split(",");
+      // 0 = x, 1 = y, 2 = xtan, 3 = ytan 
+      waypoints.add(
+        new Pose2d(
+          Double.parseDouble(lineProperties[0]),
+          Double.parseDouble(lineProperties[1]), 
+          new Rotation2d(
+            Math.atan2(
+              Double.parseDouble(lineProperties[3]),
+              Double.parseDouble(lineProperties[2])
+            )
+          )
+        )
+      );
+    }
+
+    TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
+    config.setKinematics(sdrive.getKinematics());
+    config.setReversed(reverse);
+    
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints, config);
+
+    RamseteCommand command = new RamseteCommand(
       trajectory,
       sdrive::getPose,
       new RamseteController(2.0, 0.7),
@@ -162,33 +209,7 @@ public class RobotContainer {
       sdrive
     );
 
-*/
-
-    //pathweaver method
-    String trajectoryJSON = "paths/path1.wpilib.json";
-    try {
-      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-      Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-      command = new RamseteCommand(
-        trajectory,
-        sdrive::getPose,
-        new RamseteController(2.0, 0.7),
-        sdrive.getFeedforward(),
-        sdrive.getKinematics(), 
-        sdrive::getSpeeds,
-        sdrive.getLeftTrajPIDController(),
-        sdrive.getRightTrajPIDController(),
-        sdrive::setOutput,
-        sdrive
-      );
-  
-    } catch (IOException ex) {
-      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-      command = null;
-    }
-
-
-
     return command;
+
   }
 }
