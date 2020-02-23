@@ -197,6 +197,10 @@ public class S_Drive extends SubsystemBase {
     return Rotation2d.fromDegrees(-gyro.getAngle());
   }
 
+  public void setPose(Pose2d newPose){
+    pose = newPose;
+  }
+
   public DifferentialDriveKinematics getKinematics(){
     return kinematics;
   }

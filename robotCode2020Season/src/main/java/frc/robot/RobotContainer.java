@@ -42,7 +42,9 @@ import frc.robot.commands.SetClimbMotors;
 import frc.robot.commands.drive_commands.ManualDrive;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
@@ -139,7 +141,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    RamseteCommand command;
+/*    RamseteCommand command;
 
     TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
     config.setKinematics(sdrive.getKinematics());
@@ -159,25 +161,51 @@ public class RobotContainer {
         sdrive.getRightTrajPIDController(), sdrive::setOutput, sdrive);
 
     return command;
+*/
+
+    Command command;
+
+//TODO: autochooser in 
+
+    //case one
+    command = new SequentialCommandGroup(
+      new ParallelRaceGroup(
+        generateRamseteCommand("path1", false),
+        new RunIntake(sduotake)
+      ),  
+      generateRamseteCommand("path2", true),
+      new ParallelRaceGroup(
+        generateRamseteCommand("path3", false),
+        new RunIntake(sduotake)
+      ),
+      generateRamseteCommand("path4", true)
+    );
+    //case two
+
+    return generateRamseteCommand("path1", false);
+
   }
 
 
   //
 
-  public static RamseteCommand generateRamseteCommand(String pathName, boolean reverse) throws IOException {
-    //List<ControlVector> controlVectors = new ArrayList<>();
-    List<Pose2d> waypoints = new ArrayList<>();
+  public static RamseteCommand generateRamseteCommand(String pathName, boolean reverse) { //TODO: figure out what permutation of the reversals works to get the wanted behavior
 
+    RamseteCommand command;
     String pathJSON = "paths/"+ pathName +".path";
-    Path pathsPath = Filesystem.getDeployDirectory().toPath().resolve(pathJSON);
-    String contents = new String(Files.readAllBytes(pathsPath));
-    String[] lines = contents.split("\n");
 
-    for(int i = 1; i < lines.length; i++){ // first line is just decription
-      String[] lineProperties = lines[i].split(",");
-      // 0 = x, 1 = y, 2 = xtan, 3 = ytan 
-      waypoints.add(
-        new Pose2d(
+    try{
+
+      List<Pose2d> waypoints = new ArrayList<>();
+
+      Path pathsPath = Filesystem.getDeployDirectory().toPath().resolve(pathJSON);
+      String contents = new String(Files.readAllBytes(pathsPath));
+      String[] lines = contents.split("\n");
+
+      for(int i = 1; i < lines.length; i++){ // first line (index 0) is just description
+        String[] lineProperties = lines[i].split(",");
+        // 0 = x, 1 = y, 2 = xtan, 3 = ytan 
+        Pose2d tempPose = new Pose2d(
           Double.parseDouble(lineProperties[0]),
           Double.parseDouble(lineProperties[1]), 
           new Rotation2d(
@@ -186,28 +214,51 @@ public class RobotContainer {
               Double.parseDouble(lineProperties[2])
             )
           )
-        )
+        );
+        /*
+        if (reverse){ //TODO: figure out if this is necessary (flipping every heading that we list in pathweaver so that the headings are the direction of the front of the robot)
+          tempPose = new Pose2d(tempPose.getTranslation().getX(), tempPose.getTranslation().getY(), new Rotation2d(tempPose.getRotation().getRadians()+Math.PI));
+        }
+        */
+        waypoints.add(tempPose);
+
+      }
+
+      sdrive.setPose(waypoints.get(0)); //TODO: make sure this works with reversals - this placement could also be bad for other reasons (may only want to set on first go around)
+
+      TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
+      config.setKinematics(sdrive.getKinematics());
+      config.setReversed(reverse);
+      
+      Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints, config);
+
+      command = new RamseteCommand(
+        trajectory,
+        //sdrive::getPose,
+        
+        () -> {
+          Pose2d pose= sdrive.getPose();
+          if (reverse){ //TODO: make sure this method provider works & check if i even should be reversing the pose heading that we are getting
+            pose = new Pose2d(pose.getTranslation().getX(), pose.getTranslation().getY(), new Rotation2d(pose.getRotation().getRadians()+Math.PI));
+          }
+          return pose;
+        },
+        
+        new RamseteController(2.0, 0.7),
+        sdrive.getFeedforward(),
+        sdrive.getKinematics(), 
+        sdrive::getSpeeds,
+        sdrive.getLeftTrajPIDController(),
+        sdrive.getRightTrajPIDController(),
+        sdrive::setOutput,
+        sdrive
       );
+
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: " + pathJSON, ex.getStackTrace());
+      command = null;
     }
 
-    TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
-    config.setKinematics(sdrive.getKinematics());
-    config.setReversed(reverse);
-    
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints, config);
-
-    RamseteCommand command = new RamseteCommand(
-      trajectory,
-      sdrive::getPose,
-      new RamseteController(2.0, 0.7),
-      sdrive.getFeedforward(),
-      sdrive.getKinematics(), 
-      sdrive::getSpeeds,
-      sdrive.getLeftTrajPIDController(),
-      sdrive.getRightTrajPIDController(),
-      sdrive::setOutput,
-      sdrive
-    );
 
     return command;
 
