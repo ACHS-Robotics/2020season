@@ -38,6 +38,7 @@ import frc.robot.commands.drive_commands.SetAngle;
 import frc.robot.commands.duotake_commands.RunExtakeIn;
 import frc.robot.commands.duotake_commands.RunExtakeOut;
 import frc.robot.commands.duotake_commands.RunIntake;
+import frc.robot.Constants.AutoID;
 import frc.robot.commands.SetClimbMotors;
 import frc.robot.commands.drive_commands.ManualDrive;
 import frc.robot.subsystems.*;
@@ -141,48 +142,85 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-/*    RamseteCommand command;
-
-    TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
-    config.setKinematics(sdrive.getKinematics());
-    // An example trajectory to follow. All units in meters.
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
-        // Pass config
-        config);
-
-    command = new RamseteCommand(trajectory, sdrive::getPose, new RamseteController(2.0, 0.7), sdrive.getFeedforward(),
-        sdrive.getKinematics(), sdrive::getSpeeds, sdrive.getLeftTrajPIDController(),
-        sdrive.getRightTrajPIDController(), sdrive::setOutput, sdrive);
-
-    return command;
-*/
-
+    
     Command command;
 
-//TODO: autochooser in 
+    AutoID id = Robot.m_chooser.getSelected();
+    switch(id){
 
-    //case one
-    command = new SequentialCommandGroup(
-      new ParallelRaceGroup(
-        generateRamseteCommand("path1", false),
-        new RunIntake(sduotake)
-      ),  
-      generateRamseteCommand("path2", true),
-      new ParallelRaceGroup(
-        generateRamseteCommand("path3", false),
-        new RunIntake(sduotake)
-      ),
-      generateRamseteCommand("path4", true)
-    );
-    //case two
+      case HIGHTIDE:
+        System.out.println("hightide");
+        command = new SequentialCommandGroup(
+          new ParallelRaceGroup(
+            generateRamseteCommand("path1", false),
+            new RunIntake(sduotake)
+          ),  
+          generateRamseteCommand("path2", true),
+          new ParallelRaceGroup(
+            generateRamseteCommand("path3", false),
+            new RunIntake(sduotake)
+          ),
+          generateRamseteCommand("path4", true)
+        );
+        break;
 
-    return generateRamseteCommand("path1", false);
+      case RIGHT:
+        System.out.println("right");
+        command = new SequentialCommandGroup(
+          new ParallelRaceGroup(
+            generateRamseteCommand("path1", false),
+            new RunIntake(sduotake)
+          ),  
+          generateRamseteCommand("path2", true),
+          new ParallelRaceGroup(
+            generateRamseteCommand("path3", false),
+            new RunIntake(sduotake)
+          ),
+          generateRamseteCommand("path4", true)
+        );
+        break;
+
+      case WIN:
+        System.out.println("win");
+        command = new SequentialCommandGroup(
+          new ParallelRaceGroup(
+            generateRamseteCommand("path1", false),
+            new RunIntake(sduotake)
+          ),  
+          generateRamseteCommand("path2", true),
+          new ParallelRaceGroup(
+            generateRamseteCommand("path3", false),
+            new RunIntake(sduotake)
+          ),
+          generateRamseteCommand("path4", true)
+        );
+        break;
+
+      case TEST:
+        TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
+        config.setKinematics(sdrive.getKinematics());
+        // An example trajectory to follow. All units in meters.
+        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+            // Start at the origin facing the +X direction
+            new Pose2d(0, 0, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+            List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+            // End 3 meters straight ahead of where we started, facing forward
+            new Pose2d(3, 0, new Rotation2d(0)),
+            // Pass config
+            config);
+    
+        command = new RamseteCommand(trajectory, sdrive::getPose, new RamseteController(2.0, 0.7), sdrive.getFeedforward(),
+            sdrive.getKinematics(), sdrive::getSpeeds, sdrive.getLeftTrajPIDController(),
+            sdrive.getRightTrajPIDController(), sdrive::setOutput, sdrive);
+        break;
+
+      default:
+        command = null;
+        break;
+    }
+
+    return command;
 
   }
 

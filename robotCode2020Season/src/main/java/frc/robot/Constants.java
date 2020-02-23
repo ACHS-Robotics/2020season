@@ -115,6 +115,10 @@ public final class Constants {
   public static final int leftTrigger = 2;
   public static final int rightTrigger = 3;
 
+  public static enum AutoID{
+    HIGHTIDE, WIN, RIGHT, TEST
+  }
+
 
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.
