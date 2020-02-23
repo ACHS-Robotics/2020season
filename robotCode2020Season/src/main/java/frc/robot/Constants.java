@@ -71,6 +71,10 @@ public final class Constants {
   public static final double maxTrajVelocity = 0;
   public static final double maxTrajAcceleration = 0;
 
+  // limelight
+  public static final int lemonPipeline = -1; //TODO: populate lemonPipeline id
+
+
   //old 
 
 

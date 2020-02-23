@@ -7,6 +7,10 @@ import edu.wpi.first.networktables.*;
 public final class LimeLight {
     private final String _tableName; 
     private final NetworkTable _table; 
+    
+    // highest pipeline currently set
+	public static final int maxPipelineIds = 1;
+
 
     /**
      * The LimeLight class constructor. 
@@ -77,4 +81,22 @@ public final class LimeLight {
     public int getCurrentPipelineInt() { 
         return (int)this.getCurrentPipelineDouble();
     }
+
+    	/**
+	 * Sets the pipeline.
+	 * @param id The pipeline id. 
+	 */
+	public void setPipeline(int id) { 
+		if (id > maxPipelineIds) {
+			id = maxPipelineIds;
+		}
+
+		if (id < 0) {
+			id = 0;
+		}
+
+        NetworkTableEntry pipeline = this._table.getEntry("pipeline");
+		pipeline.forceSetNumber(id);	
+    }
+    
 }
