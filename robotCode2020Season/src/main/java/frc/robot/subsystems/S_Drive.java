@@ -129,7 +129,7 @@ public class S_Drive extends SubsystemBase {
   }
 
   public void runMotor(double left, double right){
-    if (left > 0.02 || left < -0.02){
+    if (left > 0.05 || left < -0.05){
       lfmoto.set(left);
       //lbmoto.set(left);
     }
@@ -137,7 +137,7 @@ public class S_Drive extends SubsystemBase {
       lfmoto.set(0);
     }
 
-    if (right > 0.02 || right < -0.02){
+    if (right > 0.05 || right < -0.05){
       rfmoto.set(right);
       //rbmoto.set(right);
     }

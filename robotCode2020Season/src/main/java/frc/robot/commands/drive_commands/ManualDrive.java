@@ -52,6 +52,7 @@ public class ManualDrive extends CommandBase {
     //  .withProperties(Map.of(""))
     //switch(controlMode)
     //--tank - linear
+    System.out.println("lyAxis: "+ lyAxis + " ryAxis: "+ ryAxis);
     sub.runMotor(lyAxis,ryAxis);
     //--tank - exponential joystick input conversion
     //double kExpCurve = SmartDashboard.getNumber("kExpCurve", 3); // higher the number the faster the exponential function grows (can see desmos image)

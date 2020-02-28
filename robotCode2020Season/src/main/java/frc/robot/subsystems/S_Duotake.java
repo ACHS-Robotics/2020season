@@ -8,6 +8,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -20,7 +22,7 @@ public class S_Duotake extends SubsystemBase {
    * Creates a new Duotake.
    */
 
-  TalonSRX intake;
+  TalonFX intake;
   TalonSRX topConveyer;
   TalonSRX bottomConveyer;
   DoubleSolenoid sol;
@@ -28,7 +30,11 @@ public class S_Duotake extends SubsystemBase {
 
 
   public S_Duotake() {
-    intake = new TalonSRX(Constants.intakePort);
+    intake = new TalonFX(Constants.intakePort);
+    intake.set(ControlMode.PercentOutput, 0);
+    intake.configFactoryDefault();
+    intake.setNeutralMode(NeutralMode.Brake);
+
     topConveyer = new TalonSRX(Constants.topConveyerPort);
     bottomConveyer = new TalonSRX(Constants.bottomConveyerPort);
     sol = new DoubleSolenoid(Constants.duotakeSolenoidPort, Constants.duotakeSolenoidForward, Constants.duotakeSolenoidReverse);
@@ -60,11 +66,11 @@ public class S_Duotake extends SubsystemBase {
 
   //swaps the state of the solenoid for different extake positions
   public void togglePneumatics(){
-    if (sol.get() == Value.kForward){
-      sol.set(Value.kReverse);
+    if (sol.get() == Value.kReverse){
+      sol.set(Value.kForward);
     }
     else {
-      sol.set(Value.kForward);
+      sol.set(Value.kReverse);
     }
   }
 

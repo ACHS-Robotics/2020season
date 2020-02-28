@@ -19,37 +19,42 @@ public class S_Climb extends SubsystemBase {
   /**
    * Creates a new S_Climb.
    */
-  public static DoubleSolenoid leftSol = new DoubleSolenoid(Constants.climbLeftSolenoidPort, Constants.climbLeftSolenoidForward, Constants.climbLeftSolenoidReverse);
-  public static DoubleSolenoid rightSol = new DoubleSolenoid(Constants.climbRightSolenoidPort, Constants.climbRightSolenoidForward, Constants.climbRightSolenoidReverse);
-  private TalonFX leftFalcon = new TalonFX(Constants.winchLeftFalcon);
-  private TalonFX rightFalcon = new TalonFX(Constants.winchRightFalcon);
+  public static DoubleSolenoid leftSol;
+  public static DoubleSolenoid rightSol;
+  private TalonFX falcon = new TalonFX(Constants.winchFalcon);
 
   public S_Climb() { 
-    leftFalcon.set(ControlMode.PercentOutput, 0);
-    leftFalcon.configFactoryDefault();
-    leftFalcon.setNeutralMode(NeutralMode.Brake);
+    leftSol = new DoubleSolenoid(Constants.climbLeftSolenoidPort, Constants.climbLeftSolenoidForward, Constants.climbLeftSolenoidReverse);
+    rightSol = new DoubleSolenoid(Constants.climbRightSolenoidPort, Constants.climbRightSolenoidForward, Constants.climbRightSolenoidReverse);
 
-    rightFalcon.set(ControlMode.PercentOutput, 0);
-    rightFalcon.configFactoryDefault();
-    rightFalcon.setNeutralMode(NeutralMode.Brake);
+    falcon.set(ControlMode.PercentOutput, 0);
+    falcon.configFactoryDefault();
+    falcon.setNeutralMode(NeutralMode.Brake);
   }
 
   public void setFalcons(double percent){
-    leftFalcon.set(ControlMode.PercentOutput, percent);
-    rightFalcon.set(ControlMode.PercentOutput, percent);
+    falcon.set(ControlMode.PercentOutput, percent);
   }
+
+  public void reversePneumatics(){
+    rightSol.set(Value.kReverse);
+    leftSol.set(Value.kReverse);
+  }
+
+  public void forwardPneumatics(){
+    rightSol.set(Value.kForward);
+    leftSol.set(Value.kForward);
+  }
+
   public void togglePneumatics(){
     if (rightSol.get() == Value.kForward && leftSol.get() == Value.kForward){
-      rightSol.set(Value.kReverse);
-      leftSol.set(Value.kReverse);
+      reversePneumatics();
     }
     else if (rightSol.get() == Value.kReverse && leftSol.get() == Value.kReverse){
-      rightSol.set(Value.kForward);
-      leftSol.set(Value.kForward);
+      forwardPneumatics();
     }
     else { // fixes if pneumatics are in opposite states
-      rightSol.set(Value.kReverse);
-      leftSol.set(Value.kReverse);
+      reversePneumatics();
     }
     
   }

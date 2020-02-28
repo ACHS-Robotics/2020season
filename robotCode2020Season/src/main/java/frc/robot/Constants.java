@@ -18,24 +18,25 @@ package frc.robot;
 public final class Constants {
   //neo sparkmaxes -- the ids on the side of the pdp with lower numbers has their can id set to 1+pdpNumber
   //TODO: set for final robot
-  public static final int NEOlf = 14;
-  public static final int NEOlb = 15;
-  public static final int NEOrf = 1;
-  public static final int NEOrb = 2;
+  public static final int NEOlf = 15;
+  public static final int NEOlb = 16;
+  public static final int NEOrf = 2;
+  public static final int NEOrb = 1;
 
-  public static final int spinnerMotoPort = -1; //TODO: finalize port number
-  public static final int winchLeftFalcon = -1; //TODO: finalize port number
-  public static final int winchRightFalcon = -1; //TODO: finalize port number
+  public static final int spinnerMotoPort = 14;
+  public static final int winchFalcon = 4; //TODO: finalize port number
 
   public static final double driveGearRatio = 10.71;
 
   //TODO: finalize module number
-  public static final int compressorModule = -1;
+  public static final int compressorModule = 0; //TODO: make sure this works
 
-  //Duotake talon ports TODO: finalize port numbers
-  public static final int intakePort = -1;
-  public static final int topConveyerPort = -1;
-  public static final int bottomConveyerPort = -1;
+  //Duotake falcon ports
+  public static final int intakePort = 3;
+
+  //Duotake talon ports 
+  public static final int topConveyerPort = 7;
+  public static final int bottomConveyerPort = 8;
 
   //Duotake solenoid TODO: finalize port numbers
   public static final int duotakeSolenoidPort = -1;
@@ -97,18 +98,23 @@ public final class Constants {
   public static final int dpadRight =  90;
 
   //arcade/weapons controller
-  public static final int manButton = 2;
-  public static final int coinButton = 3;
-  public static final int greenTopButton = 5;
-  public static final int blueTopButton = 4;
-  public static final int yellowTopButton = 6;
-  public static final int redTopButton = 7;
-  public static final int greenBottomButton = 11;
-  public static final int blueBottomButton = 9;
-  public static final int yellowBottomButton = 8;
-  public static final int redBottomButton = 7;
-  public static final int weaponsAxisY = 1;
-  public static final int weaponsAxisX = 0;
+  public static final int spinClockwiseBtn = 8; // counter clockwise for motor
+  public static final int spinClockBtn = 6; // clockwise for motor
+  public static final int rotation1Btn = 9; // rotation
+  public static final int rotation2Btn = 10; // color
+  public static final int spinPneuToggleBtn = 11;
+  public static final int extakeTogglePOV = 90;
+  public static final int intakeOutBtn = 11; //left top
+  public static final int intakeInPOV = 270;  //left bottom
+  public static final int extakeOutPOV = 180; //right top
+  public static final int extakeInPOV = 0; //right bottom
+  public static final int unmap1 = 0;
+  public static final int unmap2 = 1;
+  public static final int unmap3 = 2;
+  public static final int armExtendSwitch = 4;
+  public static final int winchSwitch = 5;
+  //public static final int weaponsAxisY = 1;
+  //public static final int weaponsAxisX = 0;
 
   //joystick axes
   public static final int leftAxisX = 0;

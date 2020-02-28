@@ -14,9 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.ctre.phoenix.motion.TrajectoryPoint;
-
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -37,9 +34,11 @@ import frc.robot.limelight.LimeLight;
 import frc.robot.commands.drive_commands.SetAngle;
 import frc.robot.commands.duotake_commands.RunExtakeIn;
 import frc.robot.commands.duotake_commands.RunExtakeOut;
-import frc.robot.commands.duotake_commands.RunIntake;
+import frc.robot.commands.duotake_commands.RunIntakeIn;
+import frc.robot.commands.duotake_commands.RunIntakeOut;
 import frc.robot.Constants.AutoID;
-import frc.robot.commands.SetClimbMotors;
+import frc.robot.commands.climb_commands.ClimbPneumaticControl;
+import frc.robot.commands.climb_commands.PrimeWinch;
 import frc.robot.commands.drive_commands.ManualDrive;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -66,6 +65,12 @@ public class RobotContainer {
   private final S_Duotake sduotake = new S_Duotake();
 
   private final ManualDrive c_manualDrive = new ManualDrive(sdrive);
+  private final RunIntakeOut c_runIntakeOut = new RunIntakeOut(sduotake);
+  private final RunIntakeIn c_runIntakeIn = new RunIntakeIn(sduotake);
+  private final RunExtakeOut c_runExtakeOut = new RunExtakeOut(sduotake);
+  private final RunExtakeIn c_runExtakeIn = new RunExtakeIn(sduotake);
+  private final ClimbPneumaticControl c_climbPneumaticControl = new ClimbPneumaticControl(sclimb);
+  private final PrimeWinch c_primeWinch = new PrimeWinch(sclimb);
   // TODO: if we need distance pid just change to having a trajectory?
   // private final SetAngle c_setAngle = new SetAngle(sdrive);
 
@@ -81,10 +86,10 @@ public class RobotContainer {
     configureButtonBindings();
     sdrive.setDefaultCommand(c_manualDrive);
 
-    /*
-     * TODO: add compressor comp = new Compressor(Constants.compressorModule);
-     * comp.setClosedLoopControl(true);
-     */
+    
+    comp = new Compressor(Constants.compressorModule);
+    comp.setClosedLoopControl(true);
+     
   }
 
   /**
@@ -122,9 +127,26 @@ public class RobotContainer {
       sdrive.runMotor(0, 0);
     }, sdrive);
 
+
+    //new JoystickButton(weaponsController, Constants.spinPneuToggleBtn).whenPressed(() -> {
+    //  
+    //})
+
+    //new POVButton(weaponsController, Constants.extakeTogglePOV).whenPressed()
+
+    new JoystickButton(weaponsController, Constants.intakeOutBtn).whileHeld(c_runIntakeOut);
+    new POVButton(weaponsController, Constants.intakeInPOV).whileHeld(c_runIntakeIn);
+    new POVButton(weaponsController, Constants.extakeOutPOV).whileHeld(c_runExtakeOut);
+    new POVButton(weaponsController, Constants.extakeInPOV).whileHeld(c_runExtakeIn);
+    new JoystickButton(weaponsController, Constants.armExtendSwitch).whileHeld(c_climbPneumaticControl);
+    new JoystickButton(weaponsController, Constants.winchSwitch).whileHeld(c_primeWinch);
+    new POVButton(weaponsController, Constants.extakeTogglePOV).whenPressed(() -> {
+      sduotake.togglePneumatics();
+    }, sduotake);
+
     // new JoystickButton(driveController, Constants.buttonA).whenPressed(new
     // SetAngle(sdrive, new LimeLight()));
-
+/*
     new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(new RunIntake(sduotake));
     new JoystickButton(weaponsController, Constants.blueTopButton).whenPressed(new RunExtakeOut(sduotake));
     new JoystickButton(weaponsController, Constants.yellowTopButton).whenPressed(new RunExtakeIn(sduotake));
@@ -132,8 +154,9 @@ public class RobotContainer {
       // invert solenoid state
       sduotake.togglePneumatics();
     }, sduotake);
+    */
     // TODO: remap button
-    new JoystickButton(weaponsController, Constants.greenTopButton).whileHeld(new SetClimbMotors(sclimb));
+    //new JoystickButton(weaponsController, Constants.greenTopButton).whileHeld(new SetClimbMotors(sclimb));
   }
 
   /**
@@ -146,7 +169,7 @@ public class RobotContainer {
     Command command;
 
     AutoID id = Robot.m_chooser.getSelected();
-    switch(id){
+    /*switch(id){
 
       case HIGHTIDE:
         System.out.println("hightide");
@@ -219,6 +242,7 @@ public class RobotContainer {
         command = null;
         break;
     }
+*/ command = null; // TODO: get rid of
 
     return command;
 
