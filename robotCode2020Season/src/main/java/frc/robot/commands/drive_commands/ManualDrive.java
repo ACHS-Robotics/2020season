@@ -23,10 +23,13 @@ public class ManualDrive extends CommandBase {
    */
   
   S_Drive sub;
+  double startExpConstant =3;
 
   public ManualDrive(S_Drive sub) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sub);
+    SmartDashboard.putNumber("kExpCurve", startExpConstant); // higher the number the faster the exponential function grows (can see desmos image)
+
     this.sub = sub;
   }
 
@@ -52,17 +55,20 @@ public class ManualDrive extends CommandBase {
     //  .withProperties(Map.of(""))
     //switch(controlMode)
     //--tank - linear
-    System.out.println("lyAxis: "+ lyAxis + " ryAxis: "+ ryAxis);
-    sub.runMotor(lyAxis,ryAxis);
+    //System.out.println("lyAxis: "+ lyAxis + " ryAxis: "+ ryAxis);
+    //sub.runMotor(lyAxis,ryAxis);
     //--tank - exponential joystick input conversion
-    //double kExpCurve = SmartDashboard.getNumber("kExpCurve", 3); // higher the number the faster the exponential function grows (can see desmos image)
+    double kExpCurve = SmartDashboard.getNumber("kExpCurve", startExpConstant); // higher the number the faster the exponential function grows (can see desmos image)
     //double outL = Math.signum(inL)*(Math.pow(2,kExpCurve*Math.abs(lyAxis))-1)/(Math.pow(2,kExpCurve)-1);
     //double outR = Math.signum(inR)*(Math.pow(2,kExpCurve*Math.abs(ryAxis))-1)/(Math.pow(2,kExpCurve)-1);
     //sub.runMotor(outL, outR);
     //--arcade drive - one stick
     //sub.arcadeDrive(lyAxis, lxAxis);
     //---GTA drive
-    //sub.arcadeDrive(rTrigger - lTrigger, rxAxis);
+    //sub.arcadeDrive(rTrigger - lTrigger, lxAxis);
+    double adjustedOutput = Math.signum(rTrigger - lTrigger)*(Math.pow(2,kExpCurve*Math.abs(rTrigger - lTrigger))-1)/(Math.pow(2,kExpCurve)-1);
+    sub.arcadeDrive(adjustedOutput, lxAxis);
+
     //--curvature drive - 1 stick
     //sub.curveDrive(lyAxis, lxAxis);
   }

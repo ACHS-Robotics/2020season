@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import frc.robot.limelight.LimeLight;
 import frc.robot.commands.drive_commands.SetAngle;
+import frc.robot.commands.duotake_commands.RunExtakeAndIntake;
 import frc.robot.commands.duotake_commands.RunExtakeIn;
 import frc.robot.commands.duotake_commands.RunExtakeOut;
 import frc.robot.commands.duotake_commands.RunIntakeIn;
@@ -42,6 +43,7 @@ import frc.robot.commands.climb_commands.PrimeWinch;
 import frc.robot.commands.drive_commands.ManualDrive;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -71,12 +73,14 @@ public class RobotContainer {
   private final RunExtakeIn c_runExtakeIn = new RunExtakeIn(sduotake);
   private final ClimbPneumaticControl c_climbPneumaticControl = new ClimbPneumaticControl(sclimb);
   private final PrimeWinch c_primeWinch = new PrimeWinch(sclimb);
+  private final RunExtakeAndIntake c_runExtakeAndIntake = new RunExtakeAndIntake(sduotake);
   // TODO: if we need distance pid just change to having a trajectory?
   // private final SetAngle c_setAngle = new SetAngle(sdrive);
 
   // controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
-  public static Joystick weaponsController = new Joystick(Constants.logitechWeaponsCont);
+  public static XboxController
+   weaponsController = new XboxController(Constants.logitechWeaponsCont);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -85,7 +89,6 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     sdrive.setDefaultCommand(c_manualDrive);
-
     
     comp = new Compressor(Constants.compressorModule);
     comp.setClosedLoopControl(true);
@@ -126,14 +129,22 @@ public class RobotContainer {
       Timer.delay(.05);
       sdrive.runMotor(0, 0);
     }, sdrive);
-
-
+/*
+    new JoystickButton(weaponsController, Constants.intakeOutBtn).whileHeld(c_runIntakeOut);
+    new JoystickButton(weaponsController, Constants.intakeInPOV).whileHeld(c_runIntakeIn);
+    new JoystickButton(weaponsController, Constants.extakeOutPOV).whileHeld(c_runExtakeOut);
+    new JoystickButton(weaponsController, Constants.extakeInPOV).whileHeld(c_runExtakeIn);
+    new JoystickButton(weaponsController, Constants.armExtendSwitch).whileHeld(c_climbPneumaticControl);
+    new JoystickButton(weaponsController, Constants.winchSwitch).whileHeld(c_primeWinch);
+    new JoystickButton(weaponsController, Constants.extakeTogglePOV).whenPressed(() -> {
+      sduotake.togglePneumatics();
+    }, sduotake);
+*/
     //new JoystickButton(weaponsController, Constants.spinPneuToggleBtn).whenPressed(() -> {
     //  
     //})
 
     //new POVButton(weaponsController, Constants.extakeTogglePOV).whenPressed()
-
     new JoystickButton(weaponsController, Constants.intakeOutBtn).whileHeld(c_runIntakeOut);
     new POVButton(weaponsController, Constants.intakeInPOV).whileHeld(c_runIntakeIn);
     new POVButton(weaponsController, Constants.extakeOutPOV).whileHeld(c_runExtakeOut);
@@ -143,6 +154,8 @@ public class RobotContainer {
     new POVButton(weaponsController, Constants.extakeTogglePOV).whenPressed(() -> {
       sduotake.togglePneumatics();
     }, sduotake);
+    new POVButton(weaponsController, Constants.extakeAndIntakePOV).whileHeld(c_runExtakeAndIntake);
+
 
     // new JoystickButton(driveController, Constants.buttonA).whenPressed(new
     // SetAngle(sdrive, new LimeLight()));
@@ -169,19 +182,23 @@ public class RobotContainer {
     Command command;
 
     AutoID id = Robot.m_chooser.getSelected();
-    /*switch(id){
+    switch(id){
+
+      case NONE:
+      command = null;
+      break;
 
       case HIGHTIDE:
         System.out.println("hightide");
         command = new SequentialCommandGroup(
           new ParallelRaceGroup(
             generateRamseteCommand("path1", false),
-            new RunIntake(sduotake)
+            new RunIntakeIn(sduotake)
           ),  
           generateRamseteCommand("path2", true),
           new ParallelRaceGroup(
             generateRamseteCommand("path3", false),
-            new RunIntake(sduotake)
+            new RunIntakeIn(sduotake)
           ),
           generateRamseteCommand("path4", true)
         );
@@ -192,12 +209,12 @@ public class RobotContainer {
         command = new SequentialCommandGroup(
           new ParallelRaceGroup(
             generateRamseteCommand("path1", false),
-            new RunIntake(sduotake)
+            new RunIntakeIn(sduotake)
           ),  
           generateRamseteCommand("path2", true),
           new ParallelRaceGroup(
             generateRamseteCommand("path3", false),
-            new RunIntake(sduotake)
+            new RunIntakeIn(sduotake)
           ),
           generateRamseteCommand("path4", true)
         );
@@ -208,12 +225,12 @@ public class RobotContainer {
         command = new SequentialCommandGroup(
           new ParallelRaceGroup(
             generateRamseteCommand("path1", false),
-            new RunIntake(sduotake)
+            new RunIntakeIn(sduotake)
           ),  
           generateRamseteCommand("path2", true),
           new ParallelRaceGroup(
             generateRamseteCommand("path3", false),
-            new RunIntake(sduotake)
+            new RunIntakeIn(sduotake)
           ),
           generateRamseteCommand("path4", true)
         );
@@ -242,7 +259,6 @@ public class RobotContainer {
         command = null;
         break;
     }
-*/ command = null; // TODO: get rid of
 
     return command;
 

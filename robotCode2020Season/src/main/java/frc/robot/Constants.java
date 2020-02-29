@@ -35,22 +35,19 @@ public final class Constants {
   public static final int intakePort = 3;
 
   //Duotake talon ports 
-  public static final int topConveyerPort = 7;
-  public static final int bottomConveyerPort = 8;
+  public static final int topConveyorPort = 7;
+  public static final int bottomConveyorPort = 8;
 
   //Duotake solenoid TODO: finalize port numbers
-  public static final int duotakeSolenoidPort = -1;
-  public static final int duotakeSolenoidReverse = -1; 
-  public static final int duotakeSolenoidForward = -1;
+  public static final int duotakeSolenoidPort = 0; 
+  public static final int duotakeSolenoidReverse = 4; //ft 
+  public static final int duotakeSolenoidForward = 5; //fb
 
   //climb solenoids TODO: finalize port numbers
-  public static final int climbLeftSolenoidPort = -1;
-  public static final int climbLeftSolenoidReverse = -1; 
-  public static final int climbLeftSolenoidForward = -1;
+  public static final int climbSolenoidPort = 0;
+  public static final int climbSolenoidReverse = 1;  //bt
+  public static final int climbSolenoidForward = 2; //bb
 
-  public static final int climbRightSolenoidPort = -1;
-  public static final int climbRightSolenoidReverse = -1; 
-  public static final int climbRightSolenoidForward = -1;
   
   //color indices -- in counter clockwise order
   public static final int kBlue = 0;
@@ -75,6 +72,9 @@ public final class Constants {
   // limelight
   public static final int lemonPipeline = -1; //TODO: populate lemonPipeline id
 
+  //rando duotake
+  public static final double defualtExtakeSpeed = 1.0; 
+
 
   //old 
 
@@ -98,23 +98,25 @@ public final class Constants {
   public static final int dpadRight =  90;
 
   //arcade/weapons controller
-  public static final int spinClockwiseBtn = 8; // counter clockwise for motor
-  public static final int spinClockBtn = 6; // clockwise for motor
-  public static final int rotation1Btn = 9; // rotation
-  public static final int rotation2Btn = 10; // color
-  public static final int spinPneuToggleBtn = 11;
+  public static final int spinClockwiseBtn = 9; // counter clockwise for motor
+  public static final int spinClockBtn = 7; // clockwise for motor
+  public static final int rotation1Btn = 10; // rotation
+  public static final int rotation2Btn = 11; // color
+  public static final int spinPneuToggleBtn = 12;
   public static final int extakeTogglePOV = 90;
-  public static final int intakeOutBtn = 11; //left top
+  public static final int intakeOutBtn = 8; //left top 7
   public static final int intakeInPOV = 270;  //left bottom
   public static final int extakeOutPOV = 180; //right top
   public static final int extakeInPOV = 0; //right bottom
+  public static final int extakeAndIntakePOV= 225;
   public static final int unmap1 = 0;
   public static final int unmap2 = 1;
   public static final int unmap3 = 2;
-  public static final int armExtendSwitch = 4;
-  public static final int winchSwitch = 5;
+  public static final int armExtendSwitch = 5;
+  public static final int winchSwitch = 6;
   //public static final int weaponsAxisY = 1;
   //public static final int weaponsAxisX = 0;
+
 
   //joystick axes
   public static final int leftAxisX = 0;
@@ -126,7 +128,7 @@ public final class Constants {
   public static final int rightTrigger = 3;
 
   public static enum AutoID{
-    HIGHTIDE, WIN, RIGHT, TEST
+    HIGHTIDE, WIN, RIGHT, TEST, NONE
   }
 
 

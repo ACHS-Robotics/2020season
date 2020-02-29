@@ -1,6 +1,6 @@
 {
     # Ports for the left-side motors
-    "leftMotorPorts": [14, 15],
+    "leftMotorPorts": [15, 16],
     # Ports for the right-side motors
     "rightMotorPorts": [1, 2],
     # Note: Inversions of the slaves (i.e. any motor *after* the first on
@@ -30,5 +30,6 @@
     # "" (NavX using default SPI, ADXRS450 using onboard CS0, or no gyro)
     "gyroPort": "SerialPort.Port.kUSB",
 }
+
 
 

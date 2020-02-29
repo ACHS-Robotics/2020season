@@ -10,13 +10,13 @@ package frc.robot.commands.duotake_commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.S_Duotake;
 
-public class RunIntakeIn extends CommandBase {
+public class RunExtakeAndIntake extends CommandBase {
   /**
-   * Creates a new RunIntake.
+   * Creates a new RunExtakeAndIntake.
    */
-S_Duotake sub;
+  private S_Duotake sub;
 
-  public RunIntakeIn(S_Duotake sub) {
+  public RunExtakeAndIntake(S_Duotake sub) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sub);
     this.sub = sub;
@@ -26,11 +26,12 @@ S_Duotake sub;
   @Override
   public void initialize() {
     sub.runIntake(-1.0);
+    sub.runExtakeOut();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() { // may need to put sub.runIntake into here instead
+  public void execute() {
   }
 
   // Called once the command ends or is interrupted.
@@ -38,6 +39,7 @@ S_Duotake sub;
   public void end(boolean interrupted) {
     if (interrupted){
       sub.stopIntake();
+      sub.stopExtake();
     }
   }
 

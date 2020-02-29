@@ -25,12 +25,13 @@ public class RunIntakeOut extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    sub.runIntake();
+    sub.runIntake(1.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("in-out");
   }
 
 

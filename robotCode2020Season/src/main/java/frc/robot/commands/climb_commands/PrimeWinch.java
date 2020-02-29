@@ -35,9 +35,9 @@ public class PrimeWinch extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
-    sub.setFalcons(1.0);
+    sub.setFalcons(.3);
     if(interrupted){
-      CompletableFuture.delayedExecutor(2000, TimeUnit.MILLISECONDS).execute(() -> {
+      CompletableFuture.delayedExecutor(1000, TimeUnit.MILLISECONDS).execute(() -> {
         sub.setFalcons(0);
       });
     }

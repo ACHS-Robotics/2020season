@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -23,8 +24,8 @@ public class S_Duotake extends SubsystemBase {
    */
 
   TalonFX intake;
-  TalonSRX topConveyer;
-  TalonSRX bottomConveyer;
+  TalonSRX topConveyor;
+  TalonSRX bottomConveyor;
   DoubleSolenoid sol;
 
 
@@ -35,33 +36,40 @@ public class S_Duotake extends SubsystemBase {
     intake.configFactoryDefault();
     intake.setNeutralMode(NeutralMode.Brake);
 
-    topConveyer = new TalonSRX(Constants.topConveyerPort);
-    bottomConveyer = new TalonSRX(Constants.bottomConveyerPort);
+    topConveyor = new TalonSRX(Constants.topConveyorPort);
+    bottomConveyor = new TalonSRX(Constants.bottomConveyorPort);
+    bottomConveyor.setInverted(true);
     sol = new DoubleSolenoid(Constants.duotakeSolenoidPort, Constants.duotakeSolenoidForward, Constants.duotakeSolenoidReverse);
+  
+    SmartDashboard.putNumber("extakeSpeed", Constants.defualtExtakeSpeed);
   }
 
   //TODO: for all motor running methodes may need to change inversions/negate set values
-  public void runIntake(){
-    intake.set(ControlMode.PercentOutput, 1.0); 
+  public void runIntake(double percent){
+    intake.set(ControlMode.PercentOutput, percent); 
   }
+
+
 
   public void stopIntake(){
     intake.set(ControlMode.PercentOutput, 0.0);
   }
 
   public void runExtakeOut(){
-    topConveyer.set(ControlMode.PercentOutput, 1.0);
-    bottomConveyer.set(ControlMode.PercentOutput, -1.0);
+    double speed = SmartDashboard.getNumber("extakeSpeed", Constants.defualtExtakeSpeed);
+    topConveyor.set(ControlMode.PercentOutput, 1.0);
+    bottomConveyor.set(ControlMode.PercentOutput, -1.0);
   }
 
   public void runExtakeIn(){
-    topConveyer.set(ControlMode.PercentOutput, -1.0);
-    bottomConveyer.set(ControlMode.PercentOutput, 1.0);
+    double speed = SmartDashboard.getNumber("extakeSpeed", Constants.defualtExtakeSpeed);
+    topConveyor.set(ControlMode.PercentOutput, -speed);
+    bottomConveyor.set(ControlMode.PercentOutput, speed);
   }
 
   public void stopExtake(){
-    topConveyer.set(ControlMode.PercentOutput, 0.0);
-    bottomConveyer.set(ControlMode.PercentOutput, 0.0);
+    topConveyor.set(ControlMode.PercentOutput, 0.0);
+    bottomConveyor.set(ControlMode.PercentOutput, 0.0);
   }
 
   //swaps the state of the solenoid for different extake positions

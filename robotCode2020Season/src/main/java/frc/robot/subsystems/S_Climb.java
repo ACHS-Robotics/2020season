@@ -19,13 +19,11 @@ public class S_Climb extends SubsystemBase {
   /**
    * Creates a new S_Climb.
    */
-  public static DoubleSolenoid leftSol;
-  public static DoubleSolenoid rightSol;
+  public static DoubleSolenoid solenoid;
   private TalonFX falcon = new TalonFX(Constants.winchFalcon);
 
   public S_Climb() { 
-    leftSol = new DoubleSolenoid(Constants.climbLeftSolenoidPort, Constants.climbLeftSolenoidForward, Constants.climbLeftSolenoidReverse);
-    rightSol = new DoubleSolenoid(Constants.climbRightSolenoidPort, Constants.climbRightSolenoidForward, Constants.climbRightSolenoidReverse);
+    solenoid = new DoubleSolenoid(Constants.climbSolenoidPort, Constants.climbSolenoidForward, Constants.climbSolenoidReverse);
 
     falcon.set(ControlMode.PercentOutput, 0);
     falcon.configFactoryDefault();
@@ -37,20 +35,18 @@ public class S_Climb extends SubsystemBase {
   }
 
   public void reversePneumatics(){
-    rightSol.set(Value.kReverse);
-    leftSol.set(Value.kReverse);
+    solenoid.set(Value.kReverse);
   }
 
   public void forwardPneumatics(){
-    rightSol.set(Value.kForward);
-    leftSol.set(Value.kForward);
+    solenoid.set(Value.kForward);
   }
 
   public void togglePneumatics(){
-    if (rightSol.get() == Value.kForward && leftSol.get() == Value.kForward){
+    if (solenoid.get() == Value.kForward){
       reversePneumatics();
     }
-    else if (rightSol.get() == Value.kReverse && leftSol.get() == Value.kReverse){
+    else if (solenoid.get() == Value.kReverse){
       forwardPneumatics();
     }
     else { // fixes if pneumatics are in opposite states
