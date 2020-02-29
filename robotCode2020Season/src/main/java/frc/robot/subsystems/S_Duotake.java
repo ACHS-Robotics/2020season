@@ -82,6 +82,10 @@ public class S_Duotake extends SubsystemBase {
     }
   }
 
+  public void setPneumaticsLow(){
+    sol.set(Value.kReverse); //TODO: make sure reverse goes down - it should
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

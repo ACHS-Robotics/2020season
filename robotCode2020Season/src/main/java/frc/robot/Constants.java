@@ -17,19 +17,17 @@ package frc.robot;
  */
 public final class Constants {
   //neo sparkmaxes -- the ids on the side of the pdp with lower numbers has their can id set to 1+pdpNumber
-  //TODO: set for final robot
   public static final int NEOlf = 15;
   public static final int NEOlb = 16;
   public static final int NEOrf = 2;
   public static final int NEOrb = 1;
 
   public static final int spinnerMotoPort = 14;
-  public static final int winchFalcon = 4; //TODO: finalize port number
+  public static final int winchFalcon = 4;
 
   public static final double driveGearRatio = 10.71;
 
-  //TODO: finalize module number
-  public static final int compressorModule = 0; //TODO: make sure this works
+  public static final int compressorModule = 0; //references the PCM
 
   //Duotake falcon ports
   public static final int intakePort = 3;
@@ -38,13 +36,13 @@ public final class Constants {
   public static final int topConveyorPort = 7;
   public static final int bottomConveyorPort = 8;
 
-  //Duotake solenoid TODO: finalize port numbers
-  public static final int duotakeSolenoidPort = 0; 
+  //Duotake solenoid
+  public static final int duotakeSolenoidPort = 0; //referencing the PCM
   public static final int duotakeSolenoidReverse = 4; //ft 
   public static final int duotakeSolenoidForward = 5; //fb
 
-  //climb solenoids TODO: finalize port numbers
-  public static final int climbSolenoidPort = 0;
+  //climb solenoids
+  public static final int climbSolenoidPort = 0; //referencing the PCM
   public static final int climbSolenoidReverse = 1;  //bt
   public static final int climbSolenoidForward = 2; //bb
 
@@ -61,13 +59,13 @@ public final class Constants {
   public static final double meters2NeoRevs = 1/neoRevs2meters;
 
   //trajectory related value (in SI units) TODO: POPULATE VALUES
-  public static final double trackWidth = 0;
-  public static final double kS = 0;
-  public static final double kV = 0;
-  public static final double kA = 0;
-  public static final double kPTraj = 0;
-  public static final double maxTrajVelocity = 0;
-  public static final double maxTrajAcceleration = 0;
+  public static final double trackWidth = ;
+  public static final double kS = 0.232;
+  public static final double kV = 2.83;
+  public static final double kA = 0.501;
+  public static final double kPTraj = 3.2; //needs adjustment
+  public static final double maxTrajVelocity = 1.5; // playing it safe for now
+  public static final double maxTrajAcceleration = .5; // playing it safe for now
 
   // limelight
   public static final int lemonPipeline = -1; //TODO: populate lemonPipeline id
@@ -128,7 +126,7 @@ public final class Constants {
   public static final int rightTrigger = 3;
 
   public static enum AutoID{
-    HIGHTIDE, WIN, RIGHT, TEST, NONE
+    HIGHTIDE, WIN, RIGHT, TEST, NONE, SIMPLE, SIMPLE_GTFO
   }
 
 

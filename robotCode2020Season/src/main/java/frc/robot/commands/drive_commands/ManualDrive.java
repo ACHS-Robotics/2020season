@@ -23,12 +23,17 @@ public class ManualDrive extends CommandBase {
    */
   
   S_Drive sub;
-  double startExpConstant =3;
+  double startFwdConstant = 3; //above 1
+  double startBackConstant = 0.5; //between 0 and 1
+  double startTurnConstant = 3; //above 1
+
 
   public ManualDrive(S_Drive sub) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sub);
-    SmartDashboard.putNumber("kExpCurve", startExpConstant); // higher the number the faster the exponential function grows (can see desmos image)
+    SmartDashboard.putNumber("kExpCurveFwd", startFwdConstant); // higher the number the faster the exponential function grows (can see desmos image)
+    SmartDashboard.putNumber("kLineSlopeBack", startBackConstant); // also stands as max magnitude of output for backward movement
+    SmartDashboard.putNumber("kExpCurveTurn", startTurnConstant);
 
     this.sub = sub;
   }
@@ -58,7 +63,7 @@ public class ManualDrive extends CommandBase {
     //System.out.println("lyAxis: "+ lyAxis + " ryAxis: "+ ryAxis);
     //sub.runMotor(lyAxis,ryAxis);
     //--tank - exponential joystick input conversion
-    double kExpCurve = SmartDashboard.getNumber("kExpCurve", startExpConstant); // higher the number the faster the exponential function grows (can see desmos image)
+    //double kExpCurve = SmartDashboard.getNumber("kExpCurve", startExpConstant); // higher the number the faster the exponential function grows (can see desmos image)
     //double outL = Math.signum(inL)*(Math.pow(2,kExpCurve*Math.abs(lyAxis))-1)/(Math.pow(2,kExpCurve)-1);
     //double outR = Math.signum(inR)*(Math.pow(2,kExpCurve*Math.abs(ryAxis))-1)/(Math.pow(2,kExpCurve)-1);
     //sub.runMotor(outL, outR);
@@ -66,9 +71,19 @@ public class ManualDrive extends CommandBase {
     //sub.arcadeDrive(lyAxis, lxAxis);
     //---GTA drive
     //sub.arcadeDrive(rTrigger - lTrigger, lxAxis);
-    double adjustedOutput = Math.signum(rTrigger - lTrigger)*(Math.pow(2,kExpCurve*Math.abs(rTrigger - lTrigger))-1)/(Math.pow(2,kExpCurve)-1);
-    sub.arcadeDrive(adjustedOutput, lxAxis);
-
+    double kExpCurveFwd = SmartDashboard.getNumber("kExpCurveFwd", startFwdConstant); // higher the number the faster the exponential function grows (can see desmos image)
+    double kLineSlopeBack = SmartDashboard.getNumber("kLineSlopeBack", startBackConstant); // higher the number the faster the exponential function grows (can see desmos image)
+    double kExpCurveTurn = SmartDashboard.getNumber("kExpCurveTurn", startTurnConstant);
+    double triggersValue = rTrigger - lTrigger;
+    double adjustedOutput;
+    if (triggersValue >= 0) {
+      adjustedOutput = Math.signum(triggersValue)*(Math.pow(2,kExpCurveFwd*Math.abs(triggersValue))-1)/(Math.pow(2,kExpCurveFwd)-1);
+    }
+    else {
+      adjustedOutput = triggersValue*kLineSlopeBack;
+    }
+    double transformedAxisValue = Math.signum(lxAxis)*(Math.pow(2,kExpCurveTurn*Math.abs(lxAxis))-1)/(Math.pow(2,kExpCurveTurn)-1);
+    sub.arcadeDrive(adjustedOutput, transformedAxisValue);
     //--curvature drive - 1 stick
     //sub.curveDrive(lyAxis, lxAxis);
   }

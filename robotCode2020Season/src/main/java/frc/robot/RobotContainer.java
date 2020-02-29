@@ -46,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -188,6 +189,40 @@ public class RobotContainer {
       command = null;
       break;
 
+      case SIMPLE:
+      command = new SequentialCommandGroup(
+        generateRamseteCommand("straightSimple", true),
+        new RunCommand(() -> {
+          sduotake.setPneumaticsLow();
+        }, sduotake),
+        c_runExtakeOut
+      );
+      break;
+
+      case SIMPLE_GTFO:
+      command = null; //TODO: update
+
+      break;
+
+      case TEST:
+      TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
+      config.setKinematics(sdrive.getKinematics());
+      // An example trajectory to follow. All units in meters.
+      Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+          // Start at the origin facing the +X direction
+          new Pose2d(0, 0, new Rotation2d(0)),
+          // Pass through these two interior waypoints, making an 's' curve path
+          List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+          // End 3 meters straight ahead of where we started, facing forward
+          new Pose2d(3, 0, new Rotation2d(0)),
+          // Pass config
+          config);
+  
+      command = new RamseteCommand(trajectory, sdrive::getPose, new RamseteController(2.0, 0.7), sdrive.getFeedforward(),
+          sdrive.getKinematics(), sdrive::getSpeeds, sdrive.getLeftTrajPIDController(),
+          sdrive.getRightTrajPIDController(), sdrive::setOutput, sdrive);
+      break;
+      /*
       case HIGHTIDE:
         System.out.println("hightide");
         command = new SequentialCommandGroup(
@@ -235,26 +270,7 @@ public class RobotContainer {
           generateRamseteCommand("path4", true)
         );
         break;
-
-      case TEST:
-        TrajectoryConfig config = new TrajectoryConfig(Constants.maxTrajVelocity, Constants.maxTrajAcceleration);
-        config.setKinematics(sdrive.getKinematics());
-        // An example trajectory to follow. All units in meters.
-        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(3, 0, new Rotation2d(0)),
-            // Pass config
-            config);
-    
-        command = new RamseteCommand(trajectory, sdrive::getPose, new RamseteController(2.0, 0.7), sdrive.getFeedforward(),
-            sdrive.getKinematics(), sdrive::getSpeeds, sdrive.getLeftTrajPIDController(),
-            sdrive.getRightTrajPIDController(), sdrive::setOutput, sdrive);
-        break;
-
+*/
       default:
         command = null;
         break;

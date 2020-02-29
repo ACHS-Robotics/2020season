@@ -37,9 +37,9 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     m_chooser = new SendableChooser<>();
-    m_chooser.setDefaultOption("Auto none", Constants.AutoID.NONE);
-    m_chooser.addOption("Auto Hightide", Constants.AutoID.HIGHTIDE);
-    m_chooser.addOption("Auto Right", Constants.AutoID.RIGHT);
+    m_chooser.setDefaultOption("Auto None", Constants.AutoID.NONE);
+    m_chooser.addOption("Auto Simple", Constants.AutoID.SIMPLE);
+    m_chooser.addOption("Auto Simple GTFO", Constants.AutoID.SIMPLE_GTFO);
     m_chooser.addOption("Auto Test", Constants.AutoID.TEST);
     SmartDashboard.putData("Auto choices", m_chooser);
   }
