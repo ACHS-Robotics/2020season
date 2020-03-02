@@ -35,14 +35,18 @@ import frc.robot.commands.drive_commands.SetAngle;
 import frc.robot.commands.duotake_commands.RunExtakeAndIntake;
 import frc.robot.commands.duotake_commands.RunExtakeIn;
 import frc.robot.commands.duotake_commands.RunExtakeOut;
+import frc.robot.commands.duotake_commands.RunExtakeOutSlowSolo;
 import frc.robot.commands.duotake_commands.RunIntakeIn;
 import frc.robot.commands.duotake_commands.RunIntakeOut;
 import frc.robot.Constants.AutoID;
+import frc.robot.commands.auto_commands.PneumaticDown;
+import frc.robot.commands.auto_commands.TimedForward;
 import frc.robot.commands.climb_commands.ClimbPneumaticControl;
 import frc.robot.commands.climb_commands.PrimeWinch;
 import frc.robot.commands.drive_commands.ManualDrive;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -80,8 +84,7 @@ public class RobotContainer {
 
   // controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
-  public static XboxController
-   weaponsController = new XboxController(Constants.logitechWeaponsCont);
+  public static XboxController weaponsController = new XboxController(Constants.logitechWeaponsCont);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -156,7 +159,7 @@ public class RobotContainer {
       sduotake.togglePneumatics();
     }, sduotake);
     new POVButton(weaponsController, Constants.extakeAndIntakePOV).whileHeld(c_runExtakeAndIntake);
-
+    new JoystickButton(weaponsController, Constants.unmap3).whileHeld(new RunExtakeOutSlowSolo(sduotake));
 
     // new JoystickButton(driveController, Constants.buttonA).whenPressed(new
     // SetAngle(sdrive, new LimeLight()));
@@ -188,17 +191,39 @@ public class RobotContainer {
       case NONE:
       command = null;
       break;
+/*
+      case TIMED:
+      command = new RunCommand(()->{
+        sdrive.runMotor(.1, .1);
+        Timer.delay(.3);
+        sdrive.runMotor(0, 0);
+      }, sdrive);
+      break;
+*/
+      case TIMED:
+        command = new TimedForward(sdrive, 2.5);
+      break;
 
+      case TIMED_SHOOT:
+      command = new SequentialCommandGroup(
+        new TimedForward(sdrive, 2.5),
+        new PneumaticDown(sduotake, 0.5),
+        new RunExtakeOut(sduotake, 2.5)
+      );
+
+      break;
+/*
       case SIMPLE:
       command = new SequentialCommandGroup(
         generateRamseteCommand("straightSimple", true),
-        new RunCommand(() -> {
+        new InstantCommand(() -> {
+          System.out.println("duotake");
           sduotake.setPneumaticsLow();
         }, sduotake),
         c_runExtakeOut
       );
       break;
-
+*/
       case SIMPLE_GTFO:
       command = null; //TODO: update
 

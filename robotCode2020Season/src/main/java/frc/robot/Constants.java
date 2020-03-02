@@ -59,7 +59,7 @@ public final class Constants {
   public static final double meters2NeoRevs = 1/neoRevs2meters;
 
   //trajectory related value (in SI units) TODO: POPULATE VALUES
-  public static final double trackWidth = ;
+  public static final double trackWidth = 0.66;
   public static final double kS = 0.232;
   public static final double kV = 2.83;
   public static final double kA = 0.501;
@@ -72,6 +72,7 @@ public final class Constants {
 
   //rando duotake
   public static final double defualtExtakeSpeed = 1.0; 
+  public static final double defualtExtakeSpeedSlow = 0.2;
 
 
   //old 
@@ -126,7 +127,7 @@ public final class Constants {
   public static final int rightTrigger = 3;
 
   public static enum AutoID{
-    HIGHTIDE, WIN, RIGHT, TEST, NONE, SIMPLE, SIMPLE_GTFO
+    HIGHTIDE, WIN, RIGHT, TEST, NONE, SIMPLE, SIMPLE_GTFO, TIMED, TIMED_SHOOT
   }
 
 

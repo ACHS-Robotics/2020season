@@ -5,28 +5,33 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.duotake_commands;
+package frc.robot.commands.auto_commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.S_Duotake;
 
-public class RunExtakeAndIntake extends CommandBase {
+public class PneumaticDown extends CommandBase {
   /**
-   * Creates a new RunExtakeAndIntake.
+   * Creates a new PneumaticDown.
    */
-  private S_Duotake sub;
+  private final Timer timer = new Timer();
+  S_Duotake sub;
+  double interval;
 
-  public RunExtakeAndIntake(S_Duotake sub) {
+  public PneumaticDown(S_Duotake sub, double interval) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(sub);
     this.sub = sub;
+    this.interval = interval;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    sub.runIntake(-1.0);
-    sub.runExtakeOutSlow();
+    sub.setPneumaticsLow();
+    timer.reset();
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -37,15 +42,11 @@ public class RunExtakeAndIntake extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    if (interrupted){
-      sub.stopIntake();
-      sub.stopExtake();
-    }
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return timer.get() >= interval;
   }
 }

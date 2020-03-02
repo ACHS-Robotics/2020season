@@ -36,8 +36,11 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
+
     m_chooser = new SendableChooser<>();
     m_chooser.setDefaultOption("Auto None", Constants.AutoID.NONE);
+    m_chooser.addOption("Auto Timed", Constants.AutoID.TIMED);
+    m_chooser.addOption("Auto Timed Shoot", Constants.AutoID.TIMED_SHOOT);
     m_chooser.addOption("Auto Simple", Constants.AutoID.SIMPLE);
     m_chooser.addOption("Auto Simple GTFO", Constants.AutoID.SIMPLE_GTFO);
     m_chooser.addOption("Auto Test", Constants.AutoID.TEST);
@@ -65,7 +68,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    //m_robotContainer.sdrive.enableCoastMode();
+    RobotContainer.sdrive.enableCoastMode();
   }
 
   @Override
@@ -102,7 +105,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     //m_robotContainer.sdrive.resetEncPosition();
-    //m_robotContainer.sdrive.enableBrakeMode();
+    RobotContainer.sdrive.enableBrakeMode();
   }
 
   /**

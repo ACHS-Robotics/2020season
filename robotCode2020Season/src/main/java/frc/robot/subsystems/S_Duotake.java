@@ -42,6 +42,7 @@ public class S_Duotake extends SubsystemBase {
     sol = new DoubleSolenoid(Constants.duotakeSolenoidPort, Constants.duotakeSolenoidForward, Constants.duotakeSolenoidReverse);
   
     SmartDashboard.putNumber("extakeSpeed", Constants.defualtExtakeSpeed);
+    SmartDashboard.putNumber("extakeSpeedSlow", Constants.defualtExtakeSpeedSlow);
   }
 
   //TODO: for all motor running methodes may need to change inversions/negate set values
@@ -57,14 +58,21 @@ public class S_Duotake extends SubsystemBase {
 
   public void runExtakeOut(){
     double speed = SmartDashboard.getNumber("extakeSpeed", Constants.defualtExtakeSpeed);
-    topConveyor.set(ControlMode.PercentOutput, 1.0);
-    bottomConveyor.set(ControlMode.PercentOutput, -1.0);
+    //System.out.println(speed);
+    topConveyor.set(ControlMode.PercentOutput, -speed);
+    bottomConveyor.set(ControlMode.PercentOutput, -speed);
   }
 
-  public void runExtakeIn(){
+  public void runExtakeIn(){ //temp out
     double speed = SmartDashboard.getNumber("extakeSpeed", Constants.defualtExtakeSpeed);
+    topConveyor.set(ControlMode.PercentOutput, -speed); //TODO: figure out why polarity of the motor mattered (should be oppoiste negative signs)
+    bottomConveyor.set(ControlMode.PercentOutput, -speed);
+  }
+
+  public void runExtakeOutSlow(){
+    double speed = SmartDashboard.getNumber("extakeSpeedSlow", Constants.defualtExtakeSpeedSlow);
     topConveyor.set(ControlMode.PercentOutput, -speed);
-    bottomConveyor.set(ControlMode.PercentOutput, speed);
+    bottomConveyor.set(ControlMode.PercentOutput, -speed); //TODO: figure out why polarity of the motor mattered (should be oppoiste negative signs)
   }
 
   public void stopExtake(){
@@ -83,7 +91,7 @@ public class S_Duotake extends SubsystemBase {
   }
 
   public void setPneumaticsLow(){
-    sol.set(Value.kReverse); //TODO: make sure reverse goes down - it should
+    sol.set(Value.kForward); //TODO: make sure reverse goes down - it should
   }
 
   @Override

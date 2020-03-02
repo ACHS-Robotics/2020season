@@ -9,6 +9,7 @@ package frc.robot.commands.drive_commands;
 
 import java.util.Map;
 
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,9 +24,14 @@ public class ManualDrive extends CommandBase {
    */
   
   S_Drive sub;
-  double startFwdConstant = 3; //above 1
-  double startBackConstant = 0.5; //between 0 and 1
-  double startTurnConstant = 3; //above 1
+  double startFwdConstant = 6; //above 1
+  double startBackConstant = 0.7; //between 0 and 1
+  double startTurnConstant = 5; //above 1
+  double startMaxSpeedFwd = 1.0; // (0,1]
+  double startMaxSpeedTurn = 1.0; // (0,1]
+  double motorRateLimitConstant = 0.2;
+  SlewRateLimiter filter;
+  SlewRateLimiter filterTurn;
 
 
   public ManualDrive(S_Drive sub) {
@@ -34,6 +40,11 @@ public class ManualDrive extends CommandBase {
     SmartDashboard.putNumber("kExpCurveFwd", startFwdConstant); // higher the number the faster the exponential function grows (can see desmos image)
     SmartDashboard.putNumber("kLineSlopeBack", startBackConstant); // also stands as max magnitude of output for backward movement
     SmartDashboard.putNumber("kExpCurveTurn", startTurnConstant);
+    SmartDashboard.putNumber("maxSpeedFwd", startMaxSpeedFwd);
+    SmartDashboard.putNumber("maxSpeedTurn", startMaxSpeedTurn);
+
+    filter = new SlewRateLimiter(1.5);
+    filterTurn = new SlewRateLimiter(5);
 
     this.sub = sub;
   }
@@ -70,20 +81,26 @@ public class ManualDrive extends CommandBase {
     //--arcade drive - one stick
     //sub.arcadeDrive(lyAxis, lxAxis);
     //---GTA drive
-    //sub.arcadeDrive(rTrigger - lTrigger, lxAxis);
+    //System.out.println(filter.calculate(rTrigger - lTrigger));
+    sub.arcadeDrive(filter.calculate(rTrigger - lTrigger), filterTurn.calculate(lxAxis));
+    
+    /*
     double kExpCurveFwd = SmartDashboard.getNumber("kExpCurveFwd", startFwdConstant); // higher the number the faster the exponential function grows (can see desmos image)
     double kLineSlopeBack = SmartDashboard.getNumber("kLineSlopeBack", startBackConstant); // higher the number the faster the exponential function grows (can see desmos image)
     double kExpCurveTurn = SmartDashboard.getNumber("kExpCurveTurn", startTurnConstant);
+    double maxSpeedFwd = SmartDashboard.getNumber("maxSpeedFwd", startMaxSpeedFwd);
+    double maxSpeedTurn = SmartDashboard.getNumber("maxSpeedTurn", startMaxSpeedTurn);
     double triggersValue = rTrigger - lTrigger;
     double adjustedOutput;
     if (triggersValue >= 0) {
-      adjustedOutput = Math.signum(triggersValue)*(Math.pow(2,kExpCurveFwd*Math.abs(triggersValue))-1)/(Math.pow(2,kExpCurveFwd)-1);
+      adjustedOutput = Math.signum(triggersValue)*(Math.pow(2,kExpCurveFwd*Math.abs(triggersValue))-1)/(Math.pow(2,kExpCurveFwd)-1)*maxSpeedFwd;
     }
     else {
       adjustedOutput = triggersValue*kLineSlopeBack;
     }
-    double transformedAxisValue = Math.signum(lxAxis)*(Math.pow(2,kExpCurveTurn*Math.abs(lxAxis))-1)/(Math.pow(2,kExpCurveTurn)-1);
+    double transformedAxisValue = Math.signum(lxAxis)*(Math.pow(2,kExpCurveTurn*Math.abs(lxAxis))-1)/(Math.pow(2,kExpCurveTurn)-1)*maxSpeedTurn;
     sub.arcadeDrive(adjustedOutput, transformedAxisValue);
+    */
     //--curvature drive - 1 stick
     //sub.curveDrive(lyAxis, lxAxis);
   }
