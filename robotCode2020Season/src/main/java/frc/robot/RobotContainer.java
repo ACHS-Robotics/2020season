@@ -79,12 +79,11 @@ public class RobotContainer {
   private final ClimbPneumaticControl c_climbPneumaticControl = new ClimbPneumaticControl(sclimb);
   private final PrimeWinch c_primeWinch = new PrimeWinch(sclimb);
   private final RunExtakeAndIntake c_runExtakeAndIntake = new RunExtakeAndIntake(sduotake);
-  // TODO: if we need distance pid just change to having a trajectory?
-  // private final SetAngle c_setAngle = new SetAngle(sdrive);
+  // TODO: if we need distance or turn pid just change to having a trajectory?
 
   // controllers
   public static Joystick driveController = new Joystick(Constants.logitechDriveCont);
-  public static XboxController weaponsController = new XboxController(Constants.logitechWeaponsCont);
+  public static XboxController weaponsController = new XboxController(Constants.logitechWeaponsCont); //note that arcade board uses xbox
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -106,13 +105,8 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // new JoystickButton(driveController, Constants.buttonA).whileHeld(new
-    // SetAngle(sdrive));
-    // new JoystickButton(driveController, Constants.buttonB).toggleWhenPressed(new
-    // DistancePID(sdrive)); //TODO: learn how toggle works (doesn't seem to work
-    // how i think it does)
-    // new JoystickButton(driveController, Constants.rightBumper).whileHeld(new
-    // KeepAngle(sdrive)); TODO: make P bigger to help out with this
+
+    //drive buttons
     new POVButton(driveController, Constants.dpadUp).whenPressed(() -> {
       sdrive.runMotor(.5, .5);
       Timer.delay(.1);
@@ -133,22 +127,8 @@ public class RobotContainer {
       Timer.delay(.05);
       sdrive.runMotor(0, 0);
     }, sdrive);
-/*
-    new JoystickButton(weaponsController, Constants.intakeOutBtn).whileHeld(c_runIntakeOut);
-    new JoystickButton(weaponsController, Constants.intakeInPOV).whileHeld(c_runIntakeIn);
-    new JoystickButton(weaponsController, Constants.extakeOutPOV).whileHeld(c_runExtakeOut);
-    new JoystickButton(weaponsController, Constants.extakeInPOV).whileHeld(c_runExtakeIn);
-    new JoystickButton(weaponsController, Constants.armExtendSwitch).whileHeld(c_climbPneumaticControl);
-    new JoystickButton(weaponsController, Constants.winchSwitch).whileHeld(c_primeWinch);
-    new JoystickButton(weaponsController, Constants.extakeTogglePOV).whenPressed(() -> {
-      sduotake.togglePneumatics();
-    }, sduotake);
-*/
-    //new JoystickButton(weaponsController, Constants.spinPneuToggleBtn).whenPressed(() -> {
-    //  
-    //})
 
-    //new POVButton(weaponsController, Constants.extakeTogglePOV).whenPressed()
+    // weapons buttons
     new JoystickButton(weaponsController, Constants.intakeOutBtn).whileHeld(c_runIntakeOut);
     new POVButton(weaponsController, Constants.intakeInPOV).whileHeld(c_runIntakeIn);
     new POVButton(weaponsController, Constants.extakeOutPOV).whileHeld(c_runExtakeOut);
@@ -161,19 +141,6 @@ public class RobotContainer {
     new POVButton(weaponsController, Constants.extakeAndIntakePOV).whileHeld(c_runExtakeAndIntake);
     new JoystickButton(weaponsController, Constants.unmap3).whileHeld(new RunExtakeOutSlowSolo(sduotake));
 
-    // new JoystickButton(driveController, Constants.buttonA).whenPressed(new
-    // SetAngle(sdrive, new LimeLight()));
-/*
-    new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(new RunIntake(sduotake));
-    new JoystickButton(weaponsController, Constants.blueTopButton).whenPressed(new RunExtakeOut(sduotake));
-    new JoystickButton(weaponsController, Constants.yellowTopButton).whenPressed(new RunExtakeIn(sduotake));
-    new JoystickButton(weaponsController, Constants.greenTopButton).whenPressed(() -> {
-      // invert solenoid state
-      sduotake.togglePneumatics();
-    }, sduotake);
-    */
-    // TODO: remap button
-    //new JoystickButton(weaponsController, Constants.greenTopButton).whileHeld(new SetClimbMotors(sclimb));
   }
 
   /**
@@ -191,15 +158,7 @@ public class RobotContainer {
       case NONE:
       command = null;
       break;
-/*
-      case TIMED:
-      command = new RunCommand(()->{
-        sdrive.runMotor(.1, .1);
-        Timer.delay(.3);
-        sdrive.runMotor(0, 0);
-      }, sdrive);
-      break;
-*/
+
       case TIMED:
         command = new TimedForward(sdrive, 2.5);
       break;
@@ -226,7 +185,6 @@ public class RobotContainer {
 */
       case SIMPLE_GTFO:
       command = null; //TODO: update
-
       break;
 
       case TEST:
@@ -244,61 +202,13 @@ public class RobotContainer {
           config);
   
       command = new RamseteCommand(trajectory, sdrive::getPose, new RamseteController(2.0, 0.7), sdrive.getFeedforward(),
-          sdrive.getKinematics(), sdrive::getSpeeds, sdrive.getLeftTrajPIDController(),
-          sdrive.getRightTrajPIDController(), sdrive::setOutput, sdrive);
+          sdrive.getKinematics(), () -> sdrive.getSpeeds(false), sdrive.getLeftTrajPIDController(false),
+          sdrive.getRightTrajPIDController(false), (left,right) -> sdrive.setOutput(left,right,false), sdrive);
       break;
-      /*
-      case HIGHTIDE:
-        System.out.println("hightide");
-        command = new SequentialCommandGroup(
-          new ParallelRaceGroup(
-            generateRamseteCommand("path1", false),
-            new RunIntakeIn(sduotake)
-          ),  
-          generateRamseteCommand("path2", true),
-          new ParallelRaceGroup(
-            generateRamseteCommand("path3", false),
-            new RunIntakeIn(sduotake)
-          ),
-          generateRamseteCommand("path4", true)
-        );
-        break;
-
-      case RIGHT:
-        System.out.println("right");
-        command = new SequentialCommandGroup(
-          new ParallelRaceGroup(
-            generateRamseteCommand("path1", false),
-            new RunIntakeIn(sduotake)
-          ),  
-          generateRamseteCommand("path2", true),
-          new ParallelRaceGroup(
-            generateRamseteCommand("path3", false),
-            new RunIntakeIn(sduotake)
-          ),
-          generateRamseteCommand("path4", true)
-        );
-        break;
-
-      case WIN:
-        System.out.println("win");
-        command = new SequentialCommandGroup(
-          new ParallelRaceGroup(
-            generateRamseteCommand("path1", false),
-            new RunIntakeIn(sduotake)
-          ),  
-          generateRamseteCommand("path2", true),
-          new ParallelRaceGroup(
-            generateRamseteCommand("path3", false),
-            new RunIntakeIn(sduotake)
-          ),
-          generateRamseteCommand("path4", true)
-        );
-        break;
-*/
+      
       default:
         command = null;
-        break;
+      break;
     }
 
     return command;
@@ -306,8 +216,45 @@ public class RobotContainer {
   }
 
 
-  //
+  public static RamseteCommand generateRamseteCommand(String pathName, boolean reverse){ //using trajUtil & reversing 
+    RamseteCommand command;
+    String trajectoryJSON = "paths/"+ pathName +".wpilib.json";
 
+    try {
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+      Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+      
+      command = new RamseteCommand(
+        trajectory,
+        () -> {
+          Pose2d pose= sdrive.getPose();
+          if (reverse){
+            pose = new Pose2d(pose.getTranslation().getX(), pose.getTranslation().getY(), new Rotation2d(pose.getRotation().getRadians()+Math.PI));
+          }
+          return pose;
+        },
+        new RamseteController(2.0, 0.7),
+        sdrive.getFeedforward(),
+        sdrive.getKinematics(),
+        () -> sdrive.getSpeeds(reverse),
+        sdrive.getLeftTrajPIDController(reverse),
+        sdrive.getRightTrajPIDController(reverse),
+        (left, right) -> sdrive.setOutput(left, right, reverse),
+        sdrive  
+      );
+
+
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+      command = null;
+    }
+
+
+    return command;
+  }
+
+
+/*
   public static RamseteCommand generateRamseteCommand(String pathName, boolean reverse) { //TODO: figure out what permutation of the reversals works to get the wanted behavior
 
     RamseteCommand command;
@@ -334,11 +281,9 @@ public class RobotContainer {
             )
           )
         );
-        /*
-        if (reverse){ //TODO: figure out if this is necessary (flipping every heading that we list in pathweaver so that the headings are the direction of the front of the robot)
-          tempPose = new Pose2d(tempPose.getTranslation().getX(), tempPose.getTranslation().getY(), new Rotation2d(tempPose.getRotation().getRadians()+Math.PI));
-        }
-        */
+        //if (reverse){ //TODO: figure out if this is necessary (flipping every heading that we list in pathweaver so that the headings are the direction of the front of the robot)
+        //  tempPose = new Pose2d(tempPose.getTranslation().getX(), tempPose.getTranslation().getY(), new Rotation2d(tempPose.getRotation().getRadians()+Math.PI));
+        //}
         waypoints.add(tempPose);
 
       }
@@ -382,4 +327,5 @@ public class RobotContainer {
     return command;
 
   }
+*/
 }

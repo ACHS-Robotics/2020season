@@ -94,8 +94,8 @@ public class S_Drive extends SubsystemBase {
     gyro.reset();
     resetEncPosition();
     kinematics = new DifferentialDriveKinematics(Constants.trackWidth);
-    pose = new Pose2d(); // i think this should be the same as that which is used in DifferentialDriveOdometry?
-    odometry = new DifferentialDriveOdometry(getHeading()); // may want other constructor for enabling a starting position
+    pose = new Pose2d(); // i think this should be the same as that which is used in DifferentialDriveOdometry? TODO: have set up according to first position of auto traj
+    odometry = new DifferentialDriveOdometry(getHeading()); // may want other constructor for enabling a starting position TODO: have set up according to first position of auto traj
     
 
 
@@ -213,24 +213,49 @@ public class S_Drive extends SubsystemBase {
     return feedforward;
   }
 
-  public DifferentialDriveWheelSpeeds getSpeeds(){
-    return new DifferentialDriveWheelSpeeds(
-      encoderLeft.getVelocity(),
-      encoderRight.getVelocity()
-    );
+  public DifferentialDriveWheelSpeeds getSpeeds(boolean reverse){
+    if (reverse){
+      return new DifferentialDriveWheelSpeeds(
+        -encoderRight.getVelocity(),  
+        -encoderLeft.getVelocity()
+      );
+    }
+    else {
+      return new DifferentialDriveWheelSpeeds(
+        encoderLeft.getVelocity(),
+        encoderRight.getVelocity()
+      );
+    }
   }
 
-  public PIDController getLeftTrajPIDController(){
-    return leftPIDController_WPI;
+  public PIDController getLeftTrajPIDController(boolean reverse){
+    if (reverse){
+      return rightPIDController_WPI;
+    }
+    else {
+      return leftPIDController_WPI;
+    }
   }
 
-  public PIDController getRightTrajPIDController(){
-    return rightPIDController_WPI;
+  public PIDController getRightTrajPIDController(boolean reverse){
+    if (reverse){
+      return leftPIDController_WPI;  
+    }
+    else {
+      return rightPIDController_WPI;
+    }
   }
 
-  public void setOutput(double leftVolts, double rightVolts){
-    lfmoto.set(leftVolts/12);
-    rfmoto.set(rightVolts/12);
+  public void setOutput(double leftVolts, double rightVolts, boolean reverse){
+    if (reverse){
+      lfmoto.set(-rightVolts/12);
+      rfmoto.set(-leftVolts/12);
+    }
+    else {
+      lfmoto.set(leftVolts/12);
+      rfmoto.set(rightVolts/12);
+    }
+    
   }
 
   @Override
